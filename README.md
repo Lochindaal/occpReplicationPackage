@@ -24,17 +24,26 @@ docker-compose up
 
 Note: re-deploying polygon requires the deletion of all volumes, due to the creation of new security keys!
 
+
+
 # Execute local MONA run
 ```bash
-# ToDo add script!
+./run_experiments.sh 0
 ```
 # Execute on-chain certification
 ```bash
-# ToDo add script!
+./run_experiments.sh 1
+```
+
+# Post-processing
+Calculates the average values from the obtained results:
+* Average execution, recording, and replay time for the local experiments.
+* Average certification time and executed expressions for the on-chain experiments.
+```
+python -u postprocessing.py
 ```
 
 # Debug
-
 ```
 # Note make sure the start location is set to the root of the project
 runner/local_runner.py # executes the mona programs from the occp_config.ini locally
