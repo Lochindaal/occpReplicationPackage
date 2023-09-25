@@ -26,14 +26,14 @@ docker-compose up
 
 Note: re-deploying polygon requires the deletion of all volumes, due to the creation of new security keys!
 
-
-
 # Execute local MONA run
 ```bash
+mkdir -p data/logs
 ./run_experiments.sh 0
 ```
 # Execute on-chain certification
 ```bash
+mkdir -p data/logs
 ./run_experiments.sh 1
 ```
 
@@ -43,6 +43,30 @@ Calculates the average values from the obtained results:
 * Average certification time and executed expressions for the on-chain experiments.
 ```
 python -u postprocessing.py
+```
+
+# Structure
+```bash
+data/
+|-- archives
+|   |-- contains compressed execution logs from local Mona run 
+|-- ecs --> contains blockchain related data
+|   |-- contract_addresses.json
+|   |-- contract_list.dat
+|   |-- ecs_smart_contract.sol --> solidity contract
+|   |-- smart_contract_abi.json
+|   `-- wallets.json
+|-- programs
+|   `-- contains example programs written in Mona
+`-- results
+    |-- local
+    |   |-- avg_results.json --> produced after post-processing
+    |   |-- local_results.json --> results from local MONA run
+    |   `-- local_results.pickle --> results from local MONA run
+    |-- occp
+    |   |-- avg_results.json --> produced after post-processing
+    |   |-- avg_worker_results.json --> results from each worker
+    |   `-- results.json --> results from on-chain run
 ```
 
 # Debug
