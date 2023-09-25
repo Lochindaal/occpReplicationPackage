@@ -1,6 +1,8 @@
 # install local mona package and initialize folder structure
 
 ```bash
+pip install -r requirements.txt
+pip install -r mona/requirements.txt
 chmod +x setup.sh
 ./setup.sh
 ```
