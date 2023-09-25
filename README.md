@@ -45,7 +45,7 @@ Calculates the average values from the obtained results:
 python -u postprocessing.py
 ```
 
-# Structure
+# Structure of data folder
 ```bash
 data/
 |-- archives
