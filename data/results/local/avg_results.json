@@ -1,0 +1,152 @@
+{
+   "fibonacci_10000": {
+      "average_execution": 0.18038531144460043,
+      "average_recording": 0.19723798433939616,
+      "average_replay": 0.20642711321512858
+   },
+   "fibonacci_1000": {
+      "average_execution": 0.18038531144460043,
+      "average_recording": 0.25677876472473143,
+      "average_replay": 0.31297086079915365
+   },
+   "fibonacci_100": {
+      "average_execution": 0.18038531144460043,
+      "average_recording": 0.8187408367792766,
+      "average_replay": 1.4437854766845704
+   },
+   "fibonacci_10": {
+      "average_execution": 0.18038531144460043,
+      "average_recording": 6.27998628616333,
+      "average_replay": 12.703483668963115
+   },
+   "fibonacci_1": {
+      "average_execution": 0.18038531144460043,
+      "average_recording": 60.518692064285275,
+      "average_replay": 127.9328038374583
+   },
+   "fibonacci_iterative_pretty_10000": {
+      "average_execution": 0.22328732013702393,
+      "average_recording": 0.25563344955444334,
+      "average_replay": 0.26539647579193115
+   },
+   "fibonacci_iterative_pretty_1000": {
+      "average_execution": 0.22328732013702393,
+      "average_recording": 0.39114296436309814,
+      "average_replay": 0.4421422878901164
+   },
+   "fibonacci_iterative_pretty_100": {
+      "average_execution": 0.22328732013702393,
+      "average_recording": 1.7202300866444906,
+      "average_replay": 2.4013708353042604
+   },
+   "fibonacci_iterative_pretty_10": {
+      "average_execution": 0.22328732013702393,
+      "average_recording": 14.895160547892253,
+      "average_replay": 22.661381228764853
+   },
+   "fibonacci_iterative_pretty_1": {
+      "average_execution": 0.22328732013702393,
+      "average_recording": 148.7504673719406,
+      "average_replay": 227.44630057811736
+   },
+   "lanczos_10000": {
+      "average_execution": 0.21937629381815593,
+      "average_recording": 0.28139320214589436,
+      "average_replay": 0.27676008542378744
+   },
+   "lanczos_1000": {
+      "average_execution": 0.21937629381815593,
+      "average_recording": 0.8037355422973633,
+      "average_replay": 0.7615272204081217
+   },
+   "lanczos_100": {
+      "average_execution": 0.21937629381815593,
+      "average_recording": 6.146349843343099,
+      "average_replay": 5.888068064053853
+   },
+   "lanczos_10": {
+      "average_execution": 0.21937629381815593,
+      "average_recording": 59.86506396929423,
+      "average_replay": 57.52638444900513
+   },
+   "lanczos_1": {
+      "average_execution": 0.21937629381815593,
+      "average_recording": 594.4473569711049,
+      "average_replay": 588.2581710497539
+   },
+   "spf_10000": {
+      "average_execution": 0.2649696270624797,
+      "average_recording": 0.3608169714609782,
+      "average_replay": 0.3420222997665405
+   },
+   "spf_1000": {
+      "average_execution": 0.2649696270624797,
+      "average_recording": 1.1015040079752605,
+      "average_replay": 0.8369345982869466
+   },
+   "spf_100": {
+      "average_execution": 0.2649696270624797,
+      "average_recording": 9.64705425898234,
+      "average_replay": 8.199924969673157
+   },
+   "spf_10": {
+      "average_execution": 0.2649696270624797,
+      "average_recording": 94.80359840393066,
+      "average_replay": 81.46886006991069
+   },
+   "spf_1": {
+      "average_execution": 0.2649696270624797,
+      "average_recording": 943.3171874841054,
+      "average_replay": 808.5961730162303
+   },
+   "merge_sort_10000": {
+      "average_execution": 0.25458892981211345,
+      "average_recording": 0.3053752422332764,
+      "average_replay": 0.3099828243255615
+   },
+   "merge_sort_1000": {
+      "average_execution": 0.25458892981211345,
+      "average_recording": 0.7912676334381104,
+      "average_replay": 0.7616698503494262
+   },
+   "merge_sort_100": {
+      "average_execution": 0.25458892981211345,
+      "average_recording": 5.458678396542867,
+      "average_replay": 5.429325620333354
+   },
+   "merge_sort_10": {
+      "average_execution": 0.25458892981211345,
+      "average_recording": 54.52042354742686,
+      "average_replay": 56.779402844111125
+   },
+   "merge_sort_1": {
+      "average_execution": 0.25458892981211345,
+      "average_recording": 545.9159478028615,
+      "average_replay": 592.3534384091695
+   },
+   "matrix_mul_10000": {
+      "average_execution": 0.22378945350646973,
+      "average_recording": 0.2681494394938151,
+      "average_replay": 0.2756503502527873
+   },
+   "matrix_mul_1000": {
+      "average_execution": 0.22378945350646973,
+      "average_recording": 0.5485932191212972,
+      "average_replay": 0.5705183029174805
+   },
+   "matrix_mul_100": {
+      "average_execution": 0.22378945350646973,
+      "average_recording": 3.2982872327168784,
+      "average_replay": 3.7768970648447673
+   },
+   "matrix_mul_10": {
+      "average_execution": 0.22378945350646973,
+      "average_recording": 32.66709138552348,
+      "average_replay": 38.83322555224101
+   },
+   "matrix_mul_1": {
+      "average_execution": 0.22378945350646973,
+      "average_recording": 327.3697781721751,
+      "average_replay": 402.17256982326506
+   }
+}

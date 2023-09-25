@@ -1,0 +1,173 @@
+{
+   "fibonacci_10000_ERA": {
+      "average_cert": 28.354
+   },
+   "fibonacci_10000_HappyCase": {
+      "average_cert": 28.535
+   },
+   "fibonacci_10000_LazyWorker": {
+      "average_cert": 47.044
+   },
+   "fibonacci_10000_MaliciousUser": {
+      "average_cert": 28.598
+   },
+   "fibonacci_1000_ERA": {
+      "average_cert": 74.818
+   },
+   "fibonacci_1000_HappyCase": {
+      "average_cert": 74.552
+   },
+   "fibonacci_1000_LazyWorker": {
+      "average_cert": 93.19
+   },
+   "fibonacci_1000_MaliciousUser": {
+      "average_cert": 74.482
+   },
+   "fibonacci_100_ERA": {
+      "average_cert": 515.877
+   },
+   "fibonacci_100_HappyCase": {
+      "average_cert": 518.557
+   },
+   "fibonacci_100_LazyWorker": {
+      "average_cert": 558.796
+   },
+   "fibonacci_100_MaliciousUser": {
+      "average_cert": 519.205
+   },
+   "fibonacci_iterative_pretty_10000_HappyCase": {
+      "average_cert": 28.39
+   },
+   "fibonacci_iterative_pretty_10000_LazyWorker": {
+      "average_cert": 47.663
+   },
+   "fibonacci_iterative_pretty_10000_MaliciousUser": {
+      "average_cert": 28.687
+   },
+   "fibonacci_iterative_pretty_1000_HappyCase": {
+      "average_cert": 88.537
+   },
+   "fibonacci_iterative_pretty_1000_LazyWorker": {
+      "average_cert": 117.305
+   },
+   "fibonacci_iterative_pretty_1000_MaliciousUser": {
+      "average_cert": 88.806
+   },
+   "fibonacci_iterative_pretty_100_HappyCase": {
+      "average_cert": 733.356
+   },
+   "fibonacci_iterative_pretty_100_LazyWorker": {
+      "average_cert": 783.416
+   },
+   "fibonacci_iterative_pretty_100_MaliciousUser": {
+      "average_cert": 735.407
+   },
+   "lanczos_10000_HappyCase": {
+      "average_cert": 28.949
+   },
+   "lanczos_10000_LazyWorker": {
+      "average_cert": 48.167
+   },
+   "lanczos_10000_MaliciousUser": {
+      "average_cert": 28.713
+   },
+   "lanczos_1000_HappyCase": {
+      "average_cert": 74.889
+   },
+   "lanczos_1000_LazyWorker": {
+      "average_cert": 93.82
+   },
+   "lanczos_1000_MaliciousUser": {
+      "average_cert": 74.938
+   },
+   "lanczos_100_HappyCase": {
+      "average_cert": 579.692
+   },
+   "lanczos_100_LazyWorker": {
+      "average_cert": 616.441
+   },
+   "lanczos_100_MaliciousUser": {
+      "average_cert": 572.654
+   },
+   "matrix_mul_10000_HappyCase": {
+      "average_cert": 29.033
+   },
+   "matrix_mul_10000_LazyWorker": {
+      "average_cert": 46.094
+   },
+   "matrix_mul_10000_MaliciousUser": {
+      "average_cert": 29.825
+   },
+   "matrix_mul_1000_HappyCase": {
+      "average_cert": 88.785
+   },
+   "matrix_mul_1000_LazyWorker": {
+      "average_cert": 108.919
+   },
+   "matrix_mul_1000_MaliciousUser": {
+      "average_cert": 88.945
+   },
+   "matrix_mul_100_HappyCase": {
+      "average_cert": 645.103
+   },
+   "matrix_mul_100_LazyWorker": {
+      "average_cert": 682.835
+   },
+   "matrix_mul_100_MaliciousUser": {
+      "average_cert": 646.975
+   },
+   "merge_sort_10000_HappyCase": {
+      "average_cert": 28.743
+   },
+   "merge_sort_10000_LazyWorker": {
+      "average_cert": 45.375
+   },
+   "merge_sort_10000_MaliciousUser": {
+      "average_cert": 29.266
+   },
+   "merge_sort_1000_HappyCase": {
+      "average_cert": 89.383
+   },
+   "merge_sort_1000_LazyWorker": {
+      "average_cert": 119.15
+   },
+   "merge_sort_1000_MaliciousUser": {
+      "average_cert": 89.22
+   },
+   "merge_sort_100_HappyCase": {
+      "average_cert": 735.959
+   },
+   "merge_sort_100_LazyWorker": {
+      "average_cert": 788.155
+   },
+   "merge_sort_100_MaliciousUser": {
+      "average_cert": 741.889
+   },
+   "spf_10000_HappyCase": {
+      "average_cert": 28.676
+   },
+   "spf_10000_LazyWorker": {
+      "average_cert": 47.922
+   },
+   "spf_10000_MaliciousUser": {
+      "average_cert": 28.838
+   },
+   "spf_1000_HappyCase": {
+      "average_cert": 92.258
+   },
+   "spf_1000_LazyWorker": {
+      "average_cert": 118.776
+   },
+   "spf_1000_MaliciousUser": {
+      "average_cert": 92.699
+   },
+   "spf_100_HappyCase": {
+      "average_cert": 795.783
+   },
+   "spf_100_LazyWorker": {
+      "average_cert": 807.405
+   },
+   "spf_100_MaliciousUser": {
+      "average_cert": 800.219
+   }
+}

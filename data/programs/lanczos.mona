@@ -1,0 +1,107 @@
+decl create_vector(size){
+    var i = 0;
+    var vector = [];
+    while(i < size){
+        vector = vector + [0];
+        i = i + 1;
+    }
+    ret vector;
+}
+
+decl abs(value) {
+    if (value < 0) {
+        ret value * -1;
+    }
+    ret value;
+}
+
+// Define the Lanczos kernel function
+decl lanczosKernel(x, a) {
+    if (x == 0.0) {
+        ret 1.0;
+    }
+    var M_PI = 3.14159;
+    if (abs(x) < a) {
+        ret a * sin(M_PI * x) * sin(M_PI * x / a) / (M_PI * M_PI * x * x);
+    }
+    ret 0.0;
+}
+
+// Perform Lanczos interpolation on a 2D image
+decl lanczosInterpolation(input, newWidth, newHeight) {
+    var oldWidth = lenof(input[0]);
+    var oldHeight = lenof(input);
+    var output = []; //(newHeight, std::vector<double>(newWidth));
+    var i = 0;
+    while (i < newHeight){
+        output = output + [create_vector(newWidth)];
+        i = i + 1;
+    }
+    var scaleX = oldWidth / newWidth;
+    var scaleY = oldHeight / newHeight;
+
+    var kernelRadius = 2; // Lanczos kernel radius
+
+    var y = 0;
+    while (y < newHeight) {
+        var x = 0;
+        while (x < newWidth) {
+            var sum = 0.0;
+            var j = 0;
+            while (j < oldHeight) {
+                var i = 0;
+                while (i < oldWidth) {
+                    var u = (x + 0.5) * scaleX - 0.5;
+                    var v = (y + 0.5) * scaleY - 0.5;
+                    var x0 = floorintof(u) - kernelRadius + 1;
+                    var y0 = floorintof(v) - kernelRadius + 1;
+
+                    var ky = 0;
+                    while (ky < 2 * kernelRadius) {
+                        var kx = 0;
+                        while (kx < 2 * kernelRadius) {
+                            var sampleX = x0 + kx;
+                            var sampleY = y0 + ky;
+                            if (sampleX >= 0 and sampleX < oldWidth and sampleY >= 0 and sampleY < oldHeight) {
+                                var weight = lanczosKernel(u - sampleX, kernelRadius) * lanczosKernel(v - sampleY, kernelRadius);
+                                sum = sum + (input[sampleY][sampleX] * weight);
+                            }
+                            kx = kx + 1;
+                        }
+                        ky = ky  + 1;
+                    }
+                    i = i  + 1;
+                }
+                j = j  + 1;
+            }
+            var row = output[y];
+            row[x] = sum;
+            output[y] = row;
+            //output[y][x] = sum;
+            x = x  + 1;
+        }
+        y = y + 1;
+    }
+    ret output;
+}
+
+decl main() {
+    var inputImage = [
+        [0, 0, 0, 255, 255],
+        [0, 0, 0, 255, 255],
+        [0, 0, 0, 255, 255],
+        [100, 100, 150, 150, 150],
+        [100, 100, 150, 150, 150]
+    ];
+    var scale_factor = 0.5;
+
+    var h = lenof(inputImage);
+    var w = lenof(inputImage[0]);
+    var newHeight = roundintof(scale_factor * h);
+    var newWidth = roundintof(scale_factor * w);
+
+    var outputImage = lanczosInterpolation(inputImage, newWidth, newHeight);
+    println(outputImage);
+}
+
+main();

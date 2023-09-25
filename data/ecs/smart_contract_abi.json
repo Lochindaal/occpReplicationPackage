@@ -1,0 +1,800 @@
+{
+  "contractName": "ECSSequencer",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "certId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        }
+      ],
+      "name": "CertificateCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "text",
+          "type": "string"
+        }
+      ],
+      "name": "Log",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        }
+      ],
+      "name": "TaskAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "message",
+          "type": "string"
+        }
+      ],
+      "name": "TaskFailed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        }
+      ],
+      "name": "TaskReadyForCert",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        }
+      ],
+      "name": "TaskRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "traceIdx",
+          "type": "uint256"
+        }
+      ],
+      "name": "TraceRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "traceIdx",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "result",
+          "type": "bool"
+        }
+      ],
+      "name": "TraceVoteEnded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        }
+      ],
+      "name": "VoteForSequenceRequested",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "requester",
+          "type": "address"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "taskId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "traceId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "code",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "traceLocation",
+              "type": "string"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct ECSSequencer.Workload",
+          "name": "workload",
+          "type": "tuple"
+        }
+      ],
+      "name": "WorkloadGet",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "taskId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "code",
+              "type": "string"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "traceId",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "string",
+                  "name": "traceLocation",
+                  "type": "string"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "startTraceHash",
+                  "type": "bytes32"
+                }
+              ],
+              "internalType": "struct ECSSequencer.Trace[]",
+              "name": "traces",
+              "type": "tuple[]"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "targetSequence",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct ECSSequencer.Task",
+          "name": "task",
+          "type": "tuple"
+        }
+      ],
+      "name": "addTask",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "traceId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "traceLocation",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "startTraceHash",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct ECSSequencer.Trace[]",
+          "name": "traces",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "addTraces",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "certificates",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "certId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "codeHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "sequenceHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "certificateHash",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "constructedSequence",
+          "type": "bytes32[]"
+        }
+      ],
+      "name": "compareSequences",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "errorBytes",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "certHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getCertificate",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "certId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "taskId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "codeHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "sequenceHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "certificateHash",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct ECSSequencer.Certificate",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getCertificates",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "certId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "taskId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "codeHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "sequenceHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "certificateHash",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct ECSSequencer.Certificate[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getLastIndex",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getOpenTask",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getOpenTasks",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getOpenTraces",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getSequenceCounter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTaskSequence",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "startTraceHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "targetTraceHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "startTraceId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "targetTraceId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "possibleResult",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "possibleError",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct ECSSequencer.SequenceVote[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "traceId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTaskTraceMap",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "traceId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "traceLocation",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "startTraceHash",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct ECSSequencer.Trace",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getTasks",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "taskId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "code",
+              "type": "string"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "traceId",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "string",
+                  "name": "traceLocation",
+                  "type": "string"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "startTraceHash",
+                  "type": "bytes32"
+                }
+              ],
+              "internalType": "struct ECSSequencer.Trace[]",
+              "name": "traces",
+              "type": "tuple[]"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "targetSequence",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct ECSSequencer.Task[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getWorkloadSeq",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "range",
+          "type": "uint256"
+        }
+      ],
+      "name": "random",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "tasks",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "code",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "targetSequence",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "conflicts",
+          "type": "bytes32[]"
+        }
+      ],
+      "name": "uploadConflicts",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "sequence",
+          "type": "bytes32[]"
+        },
+        {
+          "internalType": "string",
+          "name": "sequenceString",
+          "type": "string"
+        }
+      ],
+      "name": "uploadPossibleSequence",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "taskId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "traceId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "targetHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "vote",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

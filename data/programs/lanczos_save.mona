@@ -1,0 +1,113 @@
+decl lanczos_kernel(x, a) {
+    if (x == 0) {
+        ret 1;
+    }
+    else if (abs(x) < a) {
+        var PI = 3.14159;
+        var piX = PI * x;
+        ret a * sin(PI * x) * sin(PI * x / a) / (PI * 3.14159 * x * x);
+    }
+    ret 0;
+}
+
+decl create_vector(size){
+    var i = 0;
+    var vector = [];
+    while(i < size){
+        vector = vector + [0];
+        i = i + 1;
+    }
+    ret vector;
+}
+
+decl min(a, b) {
+    if (a < b) {
+        ret a;
+    }
+    ret b;
+}
+
+decl max(a, b) {
+    if (a < b) {
+        ret b;
+    }
+    ret a;
+}
+
+decl abs(value) {
+    if (value < 0) {
+        ret value * -1;
+    }
+    ret value;
+}
+
+
+decl lanczos_interpolation(image, scale_factor) {
+    if (scale_factor <= 0) {
+        ret ["Scale factor must be greater than 0"];
+    }
+
+    if (scale_factor == 1){
+        ret image;
+    }
+
+    var h = lenof(image);
+    var w = lenof(image[0]);
+    var new_h = roundintof(scale_factor * h);
+    var new_w = roundintof(scale_factor * w);
+
+    // init result vector of size new_h with rows of len new_w initialized with 0
+    var i = 0;
+    // Allocate memory for the result manually
+    var result = [];
+    while (i < new_h){
+        result = result + [create_vector(new_w)];
+        i = i + 1;
+    }
+    var x_ratio = floorintof(w / new_w);
+    var y_ratio = floorintof(h / new_h);
+    var kernel_width = 2;
+    var i = 0;
+    while (i < new_h) {
+        var j = 0;
+        while (j < new_w) {
+            var x = x_ratio * j;
+            var y = y_ratio * i;
+            var x1 = floorintof(x - kernel_width / 2);
+            var x2 = floorintof(x + kernel_width / 2);
+            var y1 = floorintof(y - kernel_width / 2);
+            var y2 = floorintof(y + kernel_width / 2);
+
+            var x1 = max(0, x1);
+            var x2 = min(w - 1, x2);
+            var y1 = max(0, y1);
+            var y2 = min(h - 1, y2);
+            var pixel_value = 0;
+            var yy = y1;
+            while (yy <= y2) {
+                var xx = x1;
+                while (xx <= x2) {
+                    var kernel_value = lanczos_kernel(x - xx, 3) * lanczos_kernel(y - yy, 3);
+                    pixel_value = pixel_value + image[yy][xx] * kernel_value;
+                    xx = xx + 1;
+                }
+                yy = yy + 1;
+            }
+            var row = result[i];
+            row[j] = pixel_value;
+            result[i] = row;
+            j = j + 1;
+        }
+        i = i + 1;
+    }
+    ret result;
+}
+
+
+decl main() {
+    var image = [[0, 31, 63, 95], [31, 63, 95, 127], [63, 95, 127, 159], [95, 127, 159, 191]];
+    println(lanczos_interpolation(image, 0.5));
+}
+
+main();
+//[[1.9987325366461425e-15, 95.0], [63.0, 127.0]]
