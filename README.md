@@ -1,4 +1,9 @@
-# install local mona package and initialize folder structure
+# OCCP
+This is the replication repository for the OCCP protocol. The protocol provides functionality for program execution certification.
+
+
+
+## install local mona package and initialize folder structure
 
 ```bash
 pip install -r requirements.txt
@@ -7,7 +12,7 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-# Run environment dependencies
+## Run environment dependencies
 ```bash
 # Polygon network
 cd Docker/polygonNetwork
@@ -26,18 +31,18 @@ docker-compose up
 
 Note: re-deploying polygon requires the deletion of all volumes, due to the creation of new security keys!
 
-# Execute local MONA run
+## Execute local MONA run
 ```bash
 mkdir -p data/logs
 ./run_experiments.sh 0
 ```
-# Execute on-chain certification
+## Execute on-chain certification
 ```bash
 mkdir -p data/logs
 ./run_experiments.sh 1
 ```
 
-# Post-processing
+## Post-processing
 Calculates the average values from the obtained results:
 * Average execution, recording, and replay time for the local experiments.
 * Average certification time and executed expressions for the on-chain experiments.
@@ -45,7 +50,7 @@ Calculates the average values from the obtained results:
 python -u postprocessing.py
 ```
 
-# Structure of data folder
+## Structure of data folder
 ```bash
 data/
 |-- archives
@@ -69,7 +74,7 @@ data/
     |   `-- results.json --> results from on-chain run
 ```
 
-# Debug
+## Debug
 ```
 # Note make sure the start location is set to the root of the project
 runner/local_runner.py # executes the mona programs from the occp_config.ini locally
