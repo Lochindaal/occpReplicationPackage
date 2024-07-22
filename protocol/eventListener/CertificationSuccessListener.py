@@ -10,7 +10,7 @@ class CertificationSuccessListener(BaseListener):
         event_filter = ecs.contract.events.CertificateCreated.create_filter(
             fromBlock="latest"
         )
-        super().__init__(listener_id, ecs, kill_all, event_filter)
+        super().__init__(listener_id, ecs, kill_all, event_filter,ecs.contract.events.CertificateCreated)
 
     def handle_event(self, event):
         event_json = json.loads(self.w3.to_json(event))
@@ -27,6 +27,7 @@ class CertificationSuccessListener(BaseListener):
         )
         if cert[0] > 0:
             self.loop_cond = False
+            self.kill_all.set()
             self.logger.info(
                 f"Verifier {self.listener_id} found certificate for Task {task_id}"
                 f"\n\tCodeHash: {cert[2]}"

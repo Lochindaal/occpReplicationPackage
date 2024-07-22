@@ -11,6 +11,8 @@ class MaliciousWorker(BaseWorker):
     def work(self):
         workload = self.get_workload()
         if workload is None:
+            if self.sleep_time < 5:
+                self.sleep_time += 1
             return
 
         task_id = workload["taskId"]

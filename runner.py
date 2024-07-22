@@ -6,10 +6,11 @@ from runner.occp_runner import OCCPRunner
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Parse an integer argument')
-    parser.add_argument('--runtype', type=int, help='An integer argument')
+    parser = argparse.ArgumentParser(description="Parse an integer argument")
+    parser.add_argument("--runtype", type=int, help="An integer argument")
 
     args = parser.parse_args()
+    args.runtype = 1
 
     if args.runtype is not None:
         print(f"Received runtype: {args.runtype}")
@@ -24,6 +25,7 @@ def main():
         raise ValueError("Invalid run type")
 
     runner.run()
+    print("END")
 
 
 if __name__ == "__main__":

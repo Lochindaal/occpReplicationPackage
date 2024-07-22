@@ -8,6 +8,8 @@ from hexbytes import HexBytes
 from web3.middleware import geth_poa_middleware
 
 from protocol.utils.web3_utils import init_web3_connection, Web3ProviderType
+import logging
+from protocol.utils.config_utils import load_config
 
 
 def prepare_traces(snapshots, trace_storage_location, malicious_user=False):
@@ -20,9 +22,12 @@ def prepare_traces(snapshots, trace_storage_location, malicious_user=False):
         sequence_hashes.append(hashlib.sha256(pickle.dumps(snap_dict_start)).digest())
         traces.append(
             {
-                "traceId": snap_id + 1,  # ToDo make traceId random but unique and within range of max snapshots!
+                "traceId": snap_id
+                + 1,  # ToDo make traceId random but unique and within range of max snapshots!
                 "traceLocation": str(trace_storage_location[i]),
-                "startTraceHash": hashlib.sha256(pickle.dumps(snap_dict_start)).digest(),
+                "startTraceHash": hashlib.sha256(
+                    pickle.dumps(snap_dict_start)
+                ).digest(),
             }
         )
     last_snap = copy.deepcopy(snapshots[len(snapshots) - 1]).__dict__
@@ -71,8 +76,9 @@ class ExecutionCertificationSystem:
         self.contract = self.w3.eth.contract(address=contract_address, abi=self.abi)
         with open("./data/ecs/wallets.json", "r") as json_file:
             self.accounts = json.load(json_file)
+        self.logger = logging.getLogger(load_config()["LOGGING"]["LogName"])
 
-    def get_workload(self):
+    def get_workload(self):  # ToDo: remove this function.
         return self.contract.functions.getWorkload().call()
 
     def get_workload_seq(self, worker_id=0):
@@ -80,6 +86,9 @@ class ExecutionCertificationSystem:
         pk = self.accounts[worker_id]["pk"]
         tx_data = self.contract.functions.getWorkloadSeq()
         receipt, tx_hash = self.send_transaction(tx_data, account, pk)
+        self.logger.info(
+            f"Transaction Cost: {receipt.gasUsed} ['get_workload_seq', worker: {worker_id}]"
+        )
         return self.extract_workload(receipt)
 
     def extract_workload(self, receipt):
@@ -87,11 +96,13 @@ class ExecutionCertificationSystem:
         return logs[0]["args"]["workload"]
 
     def get_tasks(self):
+        # ToDo: rewrite to use transaction?
         return self.contract.functions.getTasks().call()
 
     def add_task_seq(self, task_data):
         tx_data = self.contract.functions.addTask(create_task_json(task_data))
-        self.send_transaction(tx_data)
+        receipt, _ = self.send_transaction(tx_data)
+        self.logger.info(f"Transaction Cost: {receipt.gasUsed} ['add_task_seq']")
         tasks = self.get_tasks()
         task_id = tasks[len(tasks) - 1][0]
         return task_id
@@ -99,17 +110,18 @@ class ExecutionCertificationSystem:
     def send_transaction(self, tx_data, account=None, pk=None):
         nonce = self.w3.eth.get_transaction_count(self.account)
         if account is None:
+            # "gas": 90000,
             dynamic_fee_transaction = {
                 "nonce": nonce,
                 "from": self.account,
-                "gasPrice": 2000000000,
+                "gasPrice": 1,
             }
         else:
             nonce = self.w3.eth.get_transaction_count(account)
             dynamic_fee_transaction = {
                 "nonce": nonce,
                 "from": account,
-                "gasPrice": 2000000000,
+                "gasPrice": 1,
             }
         tx = tx_data.build_transaction(dynamic_fee_transaction)
         if pk is None:
@@ -121,13 +133,17 @@ class ExecutionCertificationSystem:
         tx_hash = self.w3.eth.send_raw_transaction(signed_tx.rawTransaction)
         receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash, 180)
 
-        return receipt, tx_hash
+        return receipt, tx_hash  # ToDo: receipt.gasUsed
 
     def add_traces(self, task_id, traces):
         tx_data = self.contract.functions.addTraces(task_id, traces)
-        self.send_transaction(tx_data)
+        receipt, _ = self.send_transaction(tx_data)
+        self.logger.info(
+            f"Transaction Cost: {receipt.gasUsed} ['add_traces', taskId: {task_id}]"
+        )
 
     def get_sequence_data(self, task_id: int):
+        # ToDo: rewrite to use transaction
         return self.contract.functions.getTaskSequence(task_id).call()
 
     def upload_conflicts(self, task_id: int, conflicts, acc_idx=0):
@@ -135,7 +151,11 @@ class ExecutionCertificationSystem:
         pk = self.accounts[acc_idx]["pk"]
         hex_sequences = [HexBytes(x).hex() for x in conflicts]
         tx_data = self.contract.functions.uploadConflicts(task_id, hex_sequences)
-        return self.send_transaction(tx_data, account, pk)
+        receipt, tx_hash = self.send_transaction(tx_data, account, pk)
+        self.logger.info(
+            f"Transaction Cost: {receipt.gasUsed} ['upload_conflicts', taskId: {task_id}]"
+        )
+        return receipt, tx_hash
 
     def upload_sequence(self, task_id, sequence, acc_idx=0):
         account = self.accounts[acc_idx]["acc"]
@@ -145,13 +165,21 @@ class ExecutionCertificationSystem:
         tx_data = self.contract.functions.uploadPossibleSequence(
             task_id, hex_sequences, sequence_string
         )
-        return self.send_transaction(tx_data, account, pk)
+        receipt, tx_hash = self.send_transaction(tx_data, account, pk)
+        self.logger.info(
+            f"Transaction Cost: {receipt.gasUsed} ['upload_sequence', taskId: {task_id}, accIdx: {acc_idx}]"
+        )
+        return receipt, tx_hash
 
     def vote(self, task_id: int, trace_id: int, target_hash, acc_idx):
         account = self.accounts[acc_idx]["acc"]
         pk = self.accounts[acc_idx]["pk"]
         tx_data = self.contract.functions.vote(task_id, trace_id, target_hash)
-        return self.send_transaction(tx_data, account, pk)
+        receipt, tx_hash = self.send_transaction(tx_data, account, pk)
+        self.logger.info(
+            f"Transaction Cost: {receipt.gasUsed} ['vote', taskId: {task_id}, traceId: {trace_id}, accIdx: {acc_idx}]"
+        )
+        return receipt, tx_hash
 
     def get_certificate(self, code, start, target):
         concat = eth_abi.packed.encode_packed(

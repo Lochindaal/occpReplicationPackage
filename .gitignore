@@ -1,0 +1,44 @@
+### IDE ###
+.idea/
+.classpath
+.gradle/
+.project
+.settings/
+.venv/
+*.iml
+build/
+bin/
+
+
+
+### Python ###
+__pycache__/
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+### Custom ###
+*.bak
+**/bak/
+
+
+### Docker ###
+# HardHat
+**/hardhat/artifacts/
+**/hardhat/cache/
+**/hardhat/node_modules/
+# Localstack
+**/localstack/volume/
+
+### MONA ###
+**/mona/dist/
+**/mona/mona.egg-info/

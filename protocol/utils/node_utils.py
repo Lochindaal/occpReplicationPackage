@@ -34,7 +34,9 @@ def start_workers(n_workers, data, run_args, client_type: ClientType, reserved_i
         ecs_node = worker_id % len(data["ecs_list"])
         ecs = data["ecs_list"][ecs_node]
         kill_event = data["kill_event"]
-        worker_nodes.append(start_worker(worker_id, ecs, kill_event, run_args, client_type))
+        worker_nodes.append(
+            start_worker(worker_id, ecs, kill_event, run_args, client_type)
+        )
     return worker_nodes
 
 
@@ -71,8 +73,8 @@ def initialize_nodes(data, run_args):
     mal_config = config["MALICIOUS"]
     node_config = config["NODES"]
 
-    lazy_worker_id = -1
-    lazy_worker_node = None
+    lazy_worker_ids = []
+    lazy_worker_nodes = []
     scenario = run_args["scenario"]
     if (
             scenario == ExperimentScenarios.Config and mal_config.getboolean("Worker")
@@ -85,6 +87,28 @@ def initialize_nodes(data, run_args):
             run_args,
             ClientType.MALICIOUS,
         )
+        lazy_worker_ids.append(lazy_worker_id)
+        lazy_worker_nodes.append(lazy_worker_node)
+    elif scenario == ExperimentScenarios.LazyWorkerPercentage:
+        lazy_worker_percentage = run_args["lazyPerc"]
+        num_lazy_workers = int(node_config.getint("Certifiers") * (lazy_worker_percentage / 100))
+
+        for x in range(num_lazy_workers):
+            lazy_worker_id = random.choice(
+                list(
+                    set([x for x in range(1, node_config.getint("Certifiers"))])
+                    - set(lazy_worker_ids)
+                )
+            )
+            lazy_worker_ids.append(lazy_worker_id)
+            lazy_worker_node = start_worker(
+                lazy_worker_id,
+                data["ecs_list"][0],
+                data["kill_event"],
+                run_args,
+                ClientType.MALICIOUS,
+            )
+            lazy_worker_nodes.append(lazy_worker_node)
 
     sequencer_nodes = start_listeners(
         node_config.getint("Sequencers"), data, ListenerType.SEQUENCER
@@ -95,7 +119,7 @@ def initialize_nodes(data, run_args):
         data,
         run_args,
         ClientType.NORMAL,
-        reserved_ids=[lazy_worker_id],
+        reserved_ids=lazy_worker_ids,
     )
 
     if (
@@ -109,4 +133,6 @@ def initialize_nodes(data, run_args):
         node_config.getint("Verifiers"), data, listener_type
     )
 
-    return sequencer_nodes, certifier_nodes, verifier_nodes, lazy_worker_node
+    verifier_nodes_fail = []  #= start_listeners(node_config.getint("Verifiers"), data, ListenerType.CERT_FAILURE)
+
+    return sequencer_nodes, certifier_nodes, verifier_nodes, lazy_worker_nodes, verifier_nodes_fail

@@ -24,6 +24,7 @@ class BaseWorker:
         self.config = load_config()
         self.logger = logging.getLogger(self.config["LOGGING"]["LogName"])
         self.loop_break = False
+        self.sleep_time = self.config.getint("NODES", "WorkerInterval")
         self.work_dir = os.path.join(
             self.config["EXPERIMENT"]["DumpDir"], "occp", f"node{self.worker_id}"
         )
@@ -37,7 +38,7 @@ class BaseWorker:
         create_directory(self.work_dir)
         while not self.killAll.isSet():
             self.work()
-            time.sleep(self.config.getint("NODES", "PollInterval"))
+            time.sleep(self.sleep_time)
             if self.loop_break:
                 break
         print(f"Worker {self.worker_id} ended...")

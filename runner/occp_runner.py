@@ -45,9 +45,10 @@ class OCCPRunner(BaseRunner, ABC):
             # ToDo: Execute one scenario after the other. Blockchain get bloated with data and reduces speed
             # ToDo: write function to remove data after certificate was issued or malicious actioins have been found!
             scenarios = [
-                ExperimentScenarios.HappyCase,
-                ExperimentScenarios.LazyWorker,
-                ExperimentScenarios.MaliciousUser,
+                # ExperimentScenarios.HappyCase,
+                # ExperimentScenarios.LazyWorker,
+                ExperimentScenarios.LazyWorkerPercentage,
+                # ExperimentScenarios.MaliciousUser,
                 # ExperimentScenarios.ERA,
             ]
         return scenarios
@@ -65,18 +66,32 @@ class OCCPRunner(BaseRunner, ABC):
             program_path = os.path.join(program_base_dir, f"{key}.mona")
             for step in steps:
                 for scenario in scenarios:
-                    self.delete_worker_directories()
-                    run_args = {
-                        "key": key,
-                        "program_path": program_path,
-                        "steps": step,
-                        "scenario": scenario,
-                    }
-                    run_time = self.execute_reruns(run_args)
-                    result = {f"{key}_{step}_{scenario.name}": run_time}
-                    results.append(result)
-                    path = os.path.join(self.base_path, "occp", "results.json")
-                    save_json_lines(result, path)
+                    if scenario == ExperimentScenarios.LazyWorkerPercentage:
+                        lazyworkerPerc = json.loads(
+                            self.config["NODES"]["LazyWorkerPercentages"]
+                        )
+                    else:
+                        lazyworkerPerc = [-1]
+
+                    for lazyWorkerP in lazyworkerPerc:
+                        self.delete_worker_directories()
+                        run_args = {
+                            "key": key,
+                            "program_path": program_path,
+                            "steps": step,
+                            "scenario": scenario,
+                            "lazyPerc": lazyWorkerP,
+                        }
+                        run_time = self.execute_reruns(run_args)
+                        if scenario == ExperimentScenarios.LazyWorkerPercentage:
+                            result = {
+                                f"{key}_{step}_{scenario.name}_{lazyWorkerP}": run_time
+                            }
+                        else:
+                            result = {f"{key}_{step}_{scenario.name}": run_time}
+                        results.append(result)
+                        path = os.path.join(self.base_path, "occp", "results.json")
+                        save_json_lines(result, path)
         return results
 
     def execute_rerunsNew(self, run_args):
@@ -93,7 +108,10 @@ class OCCPRunner(BaseRunner, ABC):
         return exec_times
 
     def write_execution_time(self, run_id, run_args, exec_times):
-        key = f"{run_args['key']}_{run_args['steps']}_{run_args['scenario'].name}_{run_id}"
+        if run_args['scenario'] == ExperimentScenarios.LazyWorkerPercentage:
+            key = f"{run_args['key']}_{run_args['steps']}_{run_args['scenario'].name}_{run_args['lazyPerc']}_{run_id}"
+        else:
+            key = f"{run_args['key']}_{run_args['steps']}_{run_args['scenario'].name}_{run_id}"
         output = {key: exec_times}
         path = os.path.join(self.base_path, "occp", "results_partial.json")
         save_json_lines(output, path)
@@ -111,7 +129,7 @@ class OCCPRunner(BaseRunner, ABC):
 
         start_time = time.time()
         # init ecs lib
-        base_address = self.config['NETWORK']['BCBaseAddress']
+        base_address = self.config["NETWORK"]["BCBaseAddress"]
         ecs_list = [
             init_ecs(f"{base_address}:{i}0002", self.address_list[run_id])
             for i in range(1, 4)
@@ -137,22 +155,32 @@ class OCCPRunner(BaseRunner, ABC):
             sequencer_nodes,
             certifier_nodes,
             verifier_nodes,
-            lazy_worker_node,
+            lazy_worker_nodes,
+            failure_nodes
         ) = initialize_nodes(node_data, run_args)
 
-        if run_args['scenario'] == ExperimentScenarios.LazyWorker:
-            first_to_start = [lazy_worker_node, random.choice(certifier_nodes)]
+        if (
+            run_args["scenario"] == ExperimentScenarios.LazyWorker
+            or run_args["scenario"] == ExperimentScenarios.LazyWorkerPercentage
+        ):
+            #first_to_start = lazy_worker_nodes + [random.choice(certifier_nodes)]
+            first_to_start = lazy_worker_nodes + certifier_nodes
             random.shuffle(first_to_start)
             [x.start() for x in first_to_start]
-            lazy_worker_node.join()
+            # [x.join() for x in lazy_worker_nodes]
 
         [thread.start() for thread in certifier_nodes if not thread.is_alive()]
 
+        # not_fail = [t.is_alive() for t in failure_nodes]
+
+
+        # count_failed = len([x for x in failure_nodes if x.is_alive() == False])
+        # [t.join() for t in failure_nodes]
         [t.join() for t in verifier_nodes]
         end_time = time.time() - start_time
-        kill_all.set()
-        if lazy_worker_node is not None:
-            lazy_worker_node.join()
+        # kill_all.set()
+        if len(lazy_worker_nodes) > 0:
+            [x.join() for x in lazy_worker_nodes]
         [t.join() for t in certifier_nodes]
         [t.join() for t in sequencer_nodes]
         return end_time

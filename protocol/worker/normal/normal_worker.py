@@ -21,6 +21,8 @@ class NormalWorker(BaseWorker, ABC):
         workload = self.get_workload()
         self.data_writer.write_data(self.worker_id, 1, (time.time() - start_time), self.client_type.name)
         if workload is None:
+            if self.sleep_time < 20:
+                self.sleep_time += 1
             return
         task_id = workload["taskId"]
         trace_id = workload["traceId"]

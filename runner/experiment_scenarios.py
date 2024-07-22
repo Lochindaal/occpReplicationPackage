@@ -7,3 +7,4 @@ class ExperimentScenarios(Enum):
     MaliciousUser = 2
     ERA = 3
     Config = 4
+    LazyWorkerPercentage = 5
