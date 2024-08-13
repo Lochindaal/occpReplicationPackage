@@ -10,6 +10,7 @@ from web3.middleware import geth_poa_middleware
 from protocol.utils.web3_utils import init_web3_connection, Web3ProviderType
 import logging
 from protocol.utils.config_utils import load_config
+from protocol.utils.thread_utils import write_thread_safe
 
 
 def prepare_traces(snapshots, trace_storage_location, malicious_user=False):
@@ -60,7 +61,7 @@ def get_hash(value):
 
 
 class ExecutionCertificationSystem:
-    def __init__(self, contract_address, description_file, network, account):
+    def __init__(self, contract_address, description_file, network, account, run_args):
         self.contractAddress = contract_address
         self.abi = load_abi(description_file)
         self.w3 = init_web3_connection(
@@ -69,6 +70,8 @@ class ExecutionCertificationSystem:
         self.private_key = (
             "0x758f3576e39c3503d2d139e27ce171e282cc70b40c60d1356456f3a4f1575a57"
         )
+        self.run_args = run_args
+        self.transaction_log_file = "./data/results/occp/transaction_log.json"
         # inject poa middleware (needed for L2)
         self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
         self.account = account
@@ -89,6 +92,7 @@ class ExecutionCertificationSystem:
         self.logger.info(
             f"Transaction Cost: {receipt.gasUsed} ['get_workload_seq', worker: {worker_id}]"
         )
+        self.log_gas_usage(receipt.gasUsed, "get_workload_seq")
         return self.extract_workload(receipt)
 
     def extract_workload(self, receipt):
@@ -105,6 +109,7 @@ class ExecutionCertificationSystem:
         self.logger.info(f"Transaction Cost: {receipt.gasUsed} ['add_task_seq']")
         tasks = self.get_tasks()
         task_id = tasks[len(tasks) - 1][0]
+        self.log_gas_usage(receipt.gasUsed, "add_task_seq")
         return task_id
 
     def send_transaction(self, tx_data, account=None, pk=None):
@@ -141,6 +146,7 @@ class ExecutionCertificationSystem:
         self.logger.info(
             f"Transaction Cost: {receipt.gasUsed} ['add_traces', taskId: {task_id}]"
         )
+        self.log_gas_usage(receipt.gasUsed, "add_traces")
 
     def get_sequence_data(self, task_id: int):
         # ToDo: rewrite to use transaction
@@ -155,6 +161,7 @@ class ExecutionCertificationSystem:
         self.logger.info(
             f"Transaction Cost: {receipt.gasUsed} ['upload_conflicts', taskId: {task_id}]"
         )
+        self.log_gas_usage(receipt.gasUsed, "upload_conflicts")
         return receipt, tx_hash
 
     def upload_sequence(self, task_id, sequence, acc_idx=0):
@@ -169,6 +176,7 @@ class ExecutionCertificationSystem:
         self.logger.info(
             f"Transaction Cost: {receipt.gasUsed} ['upload_sequence', taskId: {task_id}, accIdx: {acc_idx}]"
         )
+        self.log_gas_usage(receipt.gasUsed, "upload_sequence")
         return receipt, tx_hash
 
     def vote(self, task_id: int, trace_id: int, target_hash, acc_idx):
@@ -179,6 +187,8 @@ class ExecutionCertificationSystem:
         self.logger.info(
             f"Transaction Cost: {receipt.gasUsed} ['vote', taskId: {task_id}, traceId: {trace_id}, accIdx: {acc_idx}]"
         )
+        
+        self.log_gas_usage(receipt.gasUsed, "vote")
         return receipt, tx_hash
 
     def get_certificate(self, code, start, target):
@@ -191,3 +201,10 @@ class ExecutionCertificationSystem:
     # Helper Functions (not used in code)
     def get_certificates(self):
         return self.contract.functions.getCertificates().call()
+
+    def log_gas_usage(self, gasUsed, func_name):
+        run_key = f"{self.run_args['key']}_{self.run_args['scenario'].name}_{self.run_args['steps']}_{self.run_args['run_id']}"
+        data = {"key": run_key,
+                "function": func_name,
+                "gasUsed": gasUsed}
+        write_thread_safe(data, self.transaction_log_file)

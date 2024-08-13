@@ -7,17 +7,18 @@ class MaliciousWorker(BaseWorker):
     def __init__(self, worker_id, ecs, kill_all, run_args):
         self.lazy_count = 0
         super().__init__(worker_id, ecs, kill_all, run_args, 2)
+        self.max_lazy_work = random.randint(1, self.config.getint("NODES", "LazyWork"))
 
     def work(self):
         workload = self.get_workload()
         if workload is None:
-            if self.sleep_time < 5:
+            if self.sleep_time < 20:
                 self.sleep_time += 1
             return
 
         task_id = workload["taskId"]
         trace_id = workload["traceId"]
-        self.logger.info(f"Lazy worker working on Task{task_id}/Trace{trace_id}")
+        self.logger.info(f"Lazy worker ({self.worker_id}) working on Task{task_id}/Trace{trace_id}")
         target_hash, target_trace_id = self.get_random_hash(task_id, trace_id)
         if target_hash is None:
             return
@@ -25,9 +26,9 @@ class MaliciousWorker(BaseWorker):
         self.send_result(task_id, trace_id, target_hash)
         self.lazy_count += 1
         self.logger.info(
-            f"Lazy worker sent {target_trace_id} for Trace {trace_id} of Task {task_id}"
+            f"Lazy worker ({self.worker_id}) sent {target_trace_id} for Trace {trace_id} of Task {task_id}"
         )
-        if self.lazy_count >= self.config.getint("NODES", "LazyWork"):
+        if self.lazy_count >= self.max_lazy_work:
             self.loop_break = True
 
     def get_random_hash(self, task_id, trace_id):

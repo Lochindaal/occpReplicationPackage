@@ -42,3 +42,5 @@ Icon
 ### MONA ###
 **/mona/dist/
 **/mona/mona.egg-info/
+### OCCP ###
+*.egg-info/

@@ -5,7 +5,7 @@ import sys
 import time
 from abc import ABC
 from threading import Event
-
+import subprocess
 from protocol.storage.data_storage import DataStorage
 from protocol.user.user_factory import UserFactory
 from protocol.user.user_type import UserType
@@ -45,11 +45,11 @@ class OCCPRunner(BaseRunner, ABC):
             # ToDo: Execute one scenario after the other. Blockchain get bloated with data and reduces speed
             # ToDo: write function to remove data after certificate was issued or malicious actioins have been found!
             scenarios = [
-                # ExperimentScenarios.HappyCase,
+                #ExperimentScenarios.HappyCase,
                 # ExperimentScenarios.LazyWorker,
                 ExperimentScenarios.LazyWorkerPercentage,
-                # ExperimentScenarios.MaliciousUser,
-                # ExperimentScenarios.ERA,
+                #ExperimentScenarios.MaliciousUser,
+                #ExperimentScenarios.ERA,
             ]
         return scenarios
 
@@ -100,9 +100,15 @@ class OCCPRunner(BaseRunner, ABC):
         return exec_times
 
     def execute_reruns(self, run_args):
+        # define the command as a list of arguments
+        command = [ "aws", "--endpoint-url=http://localhost:4566", "s3", "rm", "s3://ecs", "--recursive" ]
         reruns = int(self.config["EXPERIMENT"]["NumberReruns"])
         exec_times = []
         for run in range(reruns):
+            # Execute the command
+            self.logger.info("Cleaning S3 storage.")
+            subprocess.run(command, text=True)
+            self.logger.info("Cleaning S3 storage ended.")
             exec_times.append(self.execute_run(run, run_args))
             self.write_execution_time(run, run_args, exec_times)
         return exec_times
@@ -131,7 +137,7 @@ class OCCPRunner(BaseRunner, ABC):
         # init ecs lib
         base_address = self.config["NETWORK"]["BCBaseAddress"]
         ecs_list = [
-            init_ecs(f"{base_address}:{i}0002", self.address_list[run_id])
+            init_ecs(f"{base_address}:{i}0002", self.address_list[run_id], run_args=run_args)
             for i in range(1, 4)
         ]
 
