@@ -1,12 +1,11 @@
 import jsonlines
 import numpy as np
-import json
 from tqdm import tqdm
 
 
 class CalculateGasCostsRQ2:
     def __init__(self) -> None:
-        self.input_file = "./data/results/occp/all_transactions.jsonl"
+        self.input_file = "./data/results/occp/all_transaction_logs.jsonl"
         self.output_file = "./data/results/occp/gas_costs.jsonl"
         self.add_task_seq = {}
         self.add_traces = {}
@@ -18,9 +17,11 @@ class CalculateGasCostsRQ2:
 
     def load_input_data(self):
         data = []
+        counter = 0
         with jsonlines.open(self.input_file) as reader:
             for obj in reader:
                 data.append(obj)
+                counter += 1
         return data
 
     def compute_sum(self):

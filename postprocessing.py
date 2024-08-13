@@ -2,6 +2,7 @@ from postprocessing.rq1_calc_average_results import CalculateAverageResultsRQ1
 from postprocessing.rq2_calc_average_results import CalculateAverageResultsRQ2
 from postprocessing.rq2_calc_worker_stats import CalculateWorkerStatsRQ2
 from postprocessing.rq2_calc_gas_costs import CalculateGasCostsRQ2
+import subprocess
 
 
 def main():
@@ -17,6 +18,10 @@ def main():
     print("Executing post-processing for RQ2 (Worker results)")
     post_proc_rq2_2.run()
     print("Executing post-processing for RQ2 (Transaction costs)")
+    # Prepare combined transaction log
+    command = 'find ./data/results/occp/ -type f -name "transaction_log.json" -exec cat {} + > ./data/results/occp/all_transaction_logs.jsonl'
+    subprocess.run(command, shell=True, check=True)
+    # Calculate avarage costs
     post_proc_rq2_3.run()
     print("Done.")
 
