@@ -66,53 +66,76 @@ class CalculateGasCostsRQ2:
                     self.upload_conflicts[key].append(value)
                     self.transaction_costs[key].append(value)
 
+    def format_number(self, num):
+        return np.round(num / (10**6), 3)
+
     def compute_average(self):
         averages = []
 
         for key in tqdm(self.transaction_costs.keys(), desc="Computing averages"):
-            data = {
-                "key": key,
-                "averages": {
-                    "total_costs": {
-                        "average": np.sum(self.transaction_costs[key]) / 30,
-                        "mean": np.mean(self.transaction_costs[key]),
+            try:
+                data = {
+                    "key": key,
+                    "averages": {
+                        "total_costs": {
+                            "average": np.sum(self.transaction_costs[key]) / 30,
+                            "average_formatted": self.format_number(
+                                np.sum(self.transaction_costs[key]) / 30
+                            ),
+                            "mean": np.mean(self.transaction_costs[key]),
+                        },
+                        "add_task": {
+                            "average": np.sum(self.add_task_seq[key]) / 30,
+                            "average_formatted": self.format_number(
+                                np.sum(self.add_task_seq[key]) / 30
+                            ),
+                            "mean": np.mean(self.add_task_seq[key]),
+                        },
+                        "add_traces": {
+                            "average": np.sum(self.add_traces[key]) / 30,
+                            "average_formatted": self.format_number(
+                                np.sum(self.add_traces[key]) / 30
+                            ),
+                            "mean": np.mean(self.add_traces[key]),
+                        },
+                        "vote": {
+                            "average": np.sum(self.vote[key]) / 30,
+                            "average_formatted": self.format_number(
+                                np.sum(self.vote[key]) / 30
+                            ),
+                            "mean": np.mean(self.vote[key]),
+                        },
+                        "get_workload": {
+                            "average": np.sum(self.get_workload[key]) / 30,
+                            "average_formatted": self.format_number(
+                                np.sum(self.get_workload[key]) / 30
+                            ),
+                            "mean": np.mean(self.get_workload[key]),
+                        },
+                        "upload_sequence": {
+                            "average": np.sum(self.upload_sequences[key]) / 30,
+                            "average_formatted": self.format_number(
+                                np.sum(self.upload_sequences[key]) / 30
+                            ),
+                            "mean": np.mean(self.upload_sequences[key]),
+                        },
+                        "upload_conflicts": {
+                            "average": np.sum(self.upload_conflicts[key]) / 30,
+                            "average_formatted": self.format_number(
+                                np.sum(self.upload_conflicts[key]) / 30
+                            ),
+                            "mean": np.mean(self.upload_conflicts[key]),
+                        },
                     },
-                    "add_task": {
-                        "average": np.sum(self.add_task_seq[key]) / 30,
-                        "mean": np.mean(self.add_task_seq[key]),
-                    },
-                    "add_traces": {
-                        "average": np.sum(self.add_traces[key]) / 30,
-                        "mean": np.mean(self.add_traces[key]),
-                    },
-                    "vote": {
-                        "average": np.sum(self.vote[key]) / 30,
-                        "mean": np.mean(self.vote[key]),
-                    },
-                    "get_workload": {
-                        "average": np.sum(self.get_workload[key]) / 30,
-                        "mean": np.mean(self.get_workload[key]),
-                    },
-                    "upload_sequence": {
-                        "average": np.sum(self.upload_sequences[key]) / 30,
-                        "mean": np.mean(self.upload_sequences[key]),
-                    },
-                    "upload_conflicts": {
-                        "average": np.sum(self.upload_conflicts[key]) / 30,
-                        "mean": np.mean(self.upload_conflicts[key]),
-                    },
-                },
-            }
-            averages.append(data)
+                }
+                averages.append(data)
+            except Exception as e:
+                print(e)
         return averages
 
     def persist(self, path, data):
         with jsonlines.open(path, mode="w") as writer:
             writer.write_all(data)
-        # with open(path, "w") as f:
-        #    for obj in data:
-        #        json.dump(obj, f, indent=3)
-        #        f.write("\n")
 
     def run(self):
         self.compute_sum()

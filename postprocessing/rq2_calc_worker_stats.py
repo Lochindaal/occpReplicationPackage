@@ -4,8 +4,8 @@ from tqdm import tqdm
 
 class CalculateWorkerStatsRQ2:
     def __init__(self):
-        self.result_file = './data/results/occp/worker_results.json'
-        self.target_file = './data/results/occp/avg_worker_results.json'
+        self.result_file = "./data/results/occp/all_worker_results.jsonl"
+        self.target_file = "./data/results/occp/avg_worker_results.jsonl"
         self.statement_sum = {}
         self.statement_count = {}
         self.workload_sum = {}
@@ -17,21 +17,23 @@ class CalculateWorkerStatsRQ2:
 
     def compute_sum_count(self):
         # Read the JSON lines file
-        with open(self.result_file, 'r') as file:
-            for line in tqdm(file, desc='Computing sum and count'):
+        counter = 0
+        with open(self.result_file, "r") as file:
+            for line in tqdm(file, desc="Computing sum and count"):
+                counter += 1
                 try:
                     data = json.loads(line)
                 except Exception as e:
                     print(line)
                     raise e
 
-                parts = data['key'].split('_')
-                key = '_'.join(parts[:-1])
-                entry_type = data['Type']
-                if entry_type == 'STMTS':
-                    values = data['Statements']
+                parts = data["key"].split("_")
+                key = "_".join(parts[:-1])
+                entry_type = data["Type"]
+                if entry_type == "STMTS":
+                    values = data["Statements"]
                 else:
-                    values = data['Time']
+                    values = data["Time"]
                 if key not in self.statement_sum:
                     self.statement_sum[key] = 0
                     self.statement_count[key] = 0
@@ -60,15 +62,15 @@ class CalculateWorkerStatsRQ2:
         averages = {}
         for key in tqdm(self.statement_sum.keys(), desc="Computing average"):
             averages[key] = {
-                'avg_stmts': self.statement_sum[key] / 30,
-                'avg_workload': self.workload_sum[key] / 30,
-                'avg_replay': self.replay_sum[key] / 30,
-                'avg_vote': self.vote_sum[key] / 30,
+                "avg_stmts": self.statement_sum[key] / 30,
+                "avg_workload": self.workload_sum[key] / 30,
+                "avg_replay": self.replay_sum[key] / 30,
+                "avg_vote": self.vote_sum[key] / 30,
             }
         return averages
 
     def persist(self, averages):
-        with open(self.target_file, 'w') as f:
+        with open(self.target_file, "w") as f:
             json.dump(averages, f, indent=3)
 
     def run(self):

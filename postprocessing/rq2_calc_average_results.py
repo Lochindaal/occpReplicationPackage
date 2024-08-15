@@ -4,14 +4,14 @@ from tqdm import tqdm
 
 class CalculateAverageResultsRQ2:
     def __init__(self):
-        self.result_file = './data/results/occp/results.json'
-        self.target_file = './data/results/occp/avg_results.json'
+        self.result_file = "./data/results/occp/all_results.jsonl"
+        self.target_file = "./data/results/occp/avg_results.jsonl"
         self.execution_sum = {}
         self.execution_count = {}
 
     def compute_sum_count(self):
         # Read the JSON lines file
-        with open(self.result_file, 'r') as file:
+        with open(self.result_file, "r") as file:
             for line in tqdm(file, desc="Computing sum and count"):
                 data = json.loads(line)
                 # Iterate through each key in the JSON object
@@ -26,14 +26,16 @@ class CalculateAverageResultsRQ2:
 
     def compute_average(self):
         averages = {}
-        for key in tqdm(self.execution_sum.keys(), desc='Computing average'):
+        for key in tqdm(self.execution_sum.keys(), desc="Computing average"):
             averages[key] = {
-                'average_cert': round(self.execution_sum[key] / self.execution_count[key], 3),
+                "average_cert": round(
+                    self.execution_sum[key] / self.execution_count[key], 3
+                ),
             }
         return averages
 
     def persist(self, averages):
-        with open(self.target_file, 'w') as f:
+        with open(self.target_file, "w") as f:
             json.dump(averages, f, indent=3)
 
     def run(self):
