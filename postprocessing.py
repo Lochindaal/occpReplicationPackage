@@ -2,6 +2,7 @@ from postprocessing.rq1_calc_average_results import CalculateAverageResultsRQ1
 from postprocessing.rq2_calc_average_results import CalculateAverageResultsRQ2
 from postprocessing.rq2_calc_worker_stats import CalculateWorkerStatsRQ2
 from postprocessing.rq2_calc_gas_costs import CalculateGasCostsRQ2
+from postprocessing.rq2_results_table import TableCreatorRQ2
 import subprocess
 
 
@@ -10,6 +11,7 @@ def main():
     post_proc_rq2_1 = CalculateAverageResultsRQ2()
     post_proc_rq2_2 = CalculateWorkerStatsRQ2()
     post_proc_rq2_3 = CalculateGasCostsRQ2()
+    post_proc_rq2_4 = TableCreatorRQ2()
 
     print("Executing post-processing for RQ1 (Results)")
     post_proc_rq1.run()
@@ -23,6 +25,8 @@ def main():
     subprocess.run(command, shell=True, check=True)
     # Calculate avarage costs
     post_proc_rq2_3.run()
+    # Create tex ready format
+    post_proc_rq2_4.run()
     print("Done.")
 
 

@@ -1,5 +1,6 @@
 import json
 from tqdm import tqdm
+import jsonlines
 
 
 class CalculateWorkerStatsRQ2:
@@ -59,19 +60,24 @@ class CalculateWorkerStatsRQ2:
                     self.workload_count[key] += 1
 
     def compute_average(self):
-        averages = {}
+        averages = []
         for key in tqdm(self.statement_sum.keys(), desc="Computing average"):
-            averages[key] = {
+            data = {
+                "key": key,
                 "avg_stmts": self.statement_sum[key] / 30,
                 "avg_workload": self.workload_sum[key] / 30,
                 "avg_replay": self.replay_sum[key] / 30,
                 "avg_vote": self.vote_sum[key] / 30,
             }
+            averages.append(data)
+
         return averages
 
     def persist(self, averages):
-        with open(self.target_file, "w") as f:
-            json.dump(averages, f, indent=3)
+        with jsonlines.open(self.target_file, mode="w") as writer:
+            writer.write_all(averages)
+        # with open(self.target_file, "w") as f:
+        #    json.dump(averages, f, indent=3)
 
     def run(self):
         self.compute_sum_count()

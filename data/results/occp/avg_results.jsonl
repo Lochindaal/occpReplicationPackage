@@ -1,224 +1,74 @@
-{
-   "fibonacci_1000_ERA": {
-      "average_cert": 73.652
-   },
-   "fibonacci_100_ERA": {
-      "average_cert": 513.174
-   },
-   "fibonacci_1000_HappyCase": {
-      "average_cert": 73.579
-   },
-   "fibonacci_100_HappyCase": {
-      "average_cert": 514.896
-   },
-   "fibonacci_iterative_pretty_1000_HappyCase": {
-      "average_cert": 87.593
-   },
-   "fibonacci_iterative_pretty_100_HappyCase": {
-      "average_cert": 729.395
-   },
-   "lanczos_1000_HappyCase": {
-      "average_cert": 76.26
-   },
-   "lanczos_100_HappyCase": {
-      "average_cert": 581.605
-   },
-   "spf_1000_HappyCase": {
-      "average_cert": 97.907
-   },
-   "spf_100_HappyCase": {
-      "average_cert": 762.622
-   },
-   "merge_sort_1000_HappyCase": {
-      "average_cert": 96.897
-   },
-   "merge_sort_100_HappyCase": {
-      "average_cert": 736.882
-   },
-   "matrix_mul_1000_HappyCase": {
-      "average_cert": 90.916
-   },
-   "matrix_mul_100_HappyCase": {
-      "average_cert": 651.147
-   },
-   "fibonacci_1000_MaliciousUser": {
-      "average_cert": 73.639
-   },
-   "fibonacci_100_MaliciousUser": {
-      "average_cert": 515.634
-   },
-   "fibonacci_iterative_pretty_1000_MaliciousUser": {
-      "average_cert": 87.741
-   },
-   "fibonacci_iterative_pretty_100_MaliciousUser": {
-      "average_cert": 730.487
-   },
-   "lanczos_1000_MaliciousUser": {
-      "average_cert": 78.147
-   },
-   "lanczos_100_MaliciousUser": {
-      "average_cert": 579.247
-   },
-   "spf_1000_MaliciousUser": {
-      "average_cert": 99.478
-   },
-   "spf_100_MaliciousUser": {
-      "average_cert": 773.87
-   },
-   "merge_sort_1000_MaliciousUser": {
-      "average_cert": 92.292
-   },
-   "merge_sort_100_MaliciousUser": {
-      "average_cert": 739.686
-   },
-   "matrix_mul_1000_MaliciousUser": {
-      "average_cert": 91.947
-   },
-   "matrix_mul_100_MaliciousUser": {
-      "average_cert": 650.831
-   },
-   "lanczos_100_LazyWorkerPercentage_10": {
-      "average_cert": 721.855
-   },
-   "spf_100_LazyWorkerPercentage_10": {
-      "average_cert": 894.811
-   },
-   "merge_sort_100_LazyWorkerPercentage_10": {
-      "average_cert": 962.512
-   },
-   "fibonacci_100_LazyWorkerPercentage_10": {
-      "average_cert": 654.382
-   },
-   "fibonacci_iterative_pretty_100_LazyWorkerPercentage_10": {
-      "average_cert": 954.152
-   },
-   "matrix_mul_100_LazyWorkerPercentage_10": {
-      "average_cert": 779.441
-   },
-   "spf_1000_LazyWorkerPercentage_10": {
-      "average_cert": 168.344
-   },
-   "fibonacci_iterative_pretty_1000_LazyWorkerPercentage_10": {
-      "average_cert": 221.272
-   },
-   "merge_sort_1000_LazyWorkerPercentage_10": {
-      "average_cert": 175.203
-   },
-   "fibonacci_1000_LazyWorkerPercentage_10": {
-      "average_cert": 135.912
-   },
-   "lanczos_1000_LazyWorkerPercentage_10": {
-      "average_cert": 141.194
-   },
-   "matrix_mul_1000_LazyWorkerPercentage_10": {
-      "average_cert": 142.687
-   },
-   "fibonacci_100_LazyWorkerPercentage_20": {
-      "average_cert": 702.067
-   },
-   "fibonacci_iterative_pretty_100_LazyWorkerPercentage_20": {
-      "average_cert": 965.92
-   },
-   "merge_sort_100_LazyWorkerPercentage_20": {
-      "average_cert": 964.519
-   },
-   "matrix_mul_100_LazyWorkerPercentage_20": {
-      "average_cert": 887.788
-   },
-   "lanczos_100_LazyWorkerPercentage_20": {
-      "average_cert": 779.922
-   },
-   "spf_100_LazyWorkerPercentage_20": {
-      "average_cert": 953.828
-   },
-   "fibonacci_iterative_pretty_1000_LazyWorkerPercentage_20": {
-      "average_cert": 202.965
-   },
-   "spf_1000_LazyWorkerPercentage_20": {
-      "average_cert": 233.937
-   },
-   "fibonacci_1000_LazyWorkerPercentage_20": {
-      "average_cert": 174.426
-   },
-   "matrix_mul_1000_LazyWorkerPercentage_20": {
-      "average_cert": 214.627
-   },
-   "lanczos_1000_LazyWorkerPercentage_20": {
-      "average_cert": 176.752
-   },
-   "merge_sort_1000_LazyWorkerPercentage_20": {
-      "average_cert": 195.528
-   },
-   "lanczos_100_LazyWorkerPercentage_30": {
-      "average_cert": 938.292
-   },
-   "fibonacci_100_LazyWorkerPercentage_30": {
-      "average_cert": 823.23
-   },
-   "fibonacci_iterative_pretty_100_LazyWorkerPercentage_30": {
-      "average_cert": 1066.666
-   },
-   "spf_100_LazyWorkerPercentage_30": {
-      "average_cert": 1115.191
-   },
-   "merge_sort_100_LazyWorkerPercentage_30": {
-      "average_cert": 1122.631
-   },
-   "matrix_mul_100_LazyWorkerPercentage_30": {
-      "average_cert": 1084.062
-   },
-   "spf_1000_LazyWorkerPercentage_30": {
-      "average_cert": 711.422
-   },
-   "fibonacci_iterative_pretty_1000_LazyWorkerPercentage_30": {
-      "average_cert": 428.06
-   },
-   "lanczos_1000_LazyWorkerPercentage_30": {
-      "average_cert": 389.54
-   },
-   "matrix_mul_1000_LazyWorkerPercentage_30": {
-      "average_cert": 433.089
-   },
-   "fibonacci_1000_LazyWorkerPercentage_30": {
-      "average_cert": 435.668
-   },
-   "merge_sort_1000_LazyWorkerPercentage_30": {
-      "average_cert": 453.675
-   },
-   "lanczos_100_LazyWorkerPercentage_40": {
-      "average_cert": 1180.06
-   },
-   "matrix_mul_100_LazyWorkerPercentage_40": {
-      "average_cert": 1210.444
-   },
-   "fibonacci_iterative_pretty_100_LazyWorkerPercentage_40": {
-      "average_cert": 1411.262
-   },
-   "fibonacci_100_LazyWorkerPercentage_40": {
-      "average_cert": 1057.348
-   },
-   "merge_sort_100_LazyWorkerPercentage_40": {
-      "average_cert": 1552.131
-   },
-   "spf_100_LazyWorkerPercentage_40": {
-      "average_cert": 1501.588
-   },
-   "matrix_mul_1000_LazyWorkerPercentage_40": {
-      "average_cert": 2175.75
-   },
-   "lanczos_1000_LazyWorkerPercentage_40": {
-      "average_cert": 1144.937
-   },
-   "fibonacci_1000_LazyWorkerPercentage_40": {
-      "average_cert": 1274.64
-   },
-   "merge_sort_1000_LazyWorkerPercentage_40": {
-      "average_cert": 780.445
-   },
-   "fibonacci_iterative_pretty_1000_LazyWorkerPercentage_40": {
-      "average_cert": 1171.964
-   },
-   "spf_1000_LazyWorkerPercentage_40": {
-      "average_cert": 1265.742
-   }
-}
+{"key": "fibonacci_1000_ERA", "average_cert": 73.652}
+{"key": "fibonacci_100_ERA", "average_cert": 513.174}
+{"key": "fibonacci_1000_HappyCase", "average_cert": 73.579}
+{"key": "fibonacci_100_HappyCase", "average_cert": 514.896}
+{"key": "fibonacci_iterative_pretty_1000_HappyCase", "average_cert": 87.593}
+{"key": "fibonacci_iterative_pretty_100_HappyCase", "average_cert": 729.395}
+{"key": "lanczos_1000_HappyCase", "average_cert": 76.26}
+{"key": "lanczos_100_HappyCase", "average_cert": 581.605}
+{"key": "spf_1000_HappyCase", "average_cert": 97.907}
+{"key": "spf_100_HappyCase", "average_cert": 762.622}
+{"key": "merge_sort_1000_HappyCase", "average_cert": 96.897}
+{"key": "merge_sort_100_HappyCase", "average_cert": 736.882}
+{"key": "matrix_mul_1000_HappyCase", "average_cert": 90.916}
+{"key": "matrix_mul_100_HappyCase", "average_cert": 651.147}
+{"key": "fibonacci_1000_MaliciousUser", "average_cert": 73.639}
+{"key": "fibonacci_100_MaliciousUser", "average_cert": 515.634}
+{"key": "fibonacci_iterative_pretty_1000_MaliciousUser", "average_cert": 87.741}
+{"key": "fibonacci_iterative_pretty_100_MaliciousUser", "average_cert": 730.487}
+{"key": "lanczos_1000_MaliciousUser", "average_cert": 78.147}
+{"key": "lanczos_100_MaliciousUser", "average_cert": 579.247}
+{"key": "spf_1000_MaliciousUser", "average_cert": 99.478}
+{"key": "spf_100_MaliciousUser", "average_cert": 773.87}
+{"key": "merge_sort_1000_MaliciousUser", "average_cert": 92.292}
+{"key": "merge_sort_100_MaliciousUser", "average_cert": 739.686}
+{"key": "matrix_mul_1000_MaliciousUser", "average_cert": 91.947}
+{"key": "matrix_mul_100_MaliciousUser", "average_cert": 650.831}
+{"key": "lanczos_100_LazyWorkerPercentage_10", "average_cert": 721.855}
+{"key": "spf_100_LazyWorkerPercentage_10", "average_cert": 894.811}
+{"key": "merge_sort_100_LazyWorkerPercentage_10", "average_cert": 962.512}
+{"key": "fibonacci_100_LazyWorkerPercentage_10", "average_cert": 654.382}
+{"key": "fibonacci_iterative_pretty_100_LazyWorkerPercentage_10", "average_cert": 954.152}
+{"key": "matrix_mul_100_LazyWorkerPercentage_10", "average_cert": 779.441}
+{"key": "spf_1000_LazyWorkerPercentage_10", "average_cert": 168.344}
+{"key": "fibonacci_iterative_pretty_1000_LazyWorkerPercentage_10", "average_cert": 221.272}
+{"key": "merge_sort_1000_LazyWorkerPercentage_10", "average_cert": 175.203}
+{"key": "fibonacci_1000_LazyWorkerPercentage_10", "average_cert": 135.912}
+{"key": "lanczos_1000_LazyWorkerPercentage_10", "average_cert": 141.194}
+{"key": "matrix_mul_1000_LazyWorkerPercentage_10", "average_cert": 142.687}
+{"key": "fibonacci_100_LazyWorkerPercentage_20", "average_cert": 702.067}
+{"key": "fibonacci_iterative_pretty_100_LazyWorkerPercentage_20", "average_cert": 965.92}
+{"key": "merge_sort_100_LazyWorkerPercentage_20", "average_cert": 964.519}
+{"key": "matrix_mul_100_LazyWorkerPercentage_20", "average_cert": 887.788}
+{"key": "lanczos_100_LazyWorkerPercentage_20", "average_cert": 779.922}
+{"key": "spf_100_LazyWorkerPercentage_20", "average_cert": 953.828}
+{"key": "fibonacci_iterative_pretty_1000_LazyWorkerPercentage_20", "average_cert": 202.965}
+{"key": "spf_1000_LazyWorkerPercentage_20", "average_cert": 233.937}
+{"key": "fibonacci_1000_LazyWorkerPercentage_20", "average_cert": 174.426}
+{"key": "matrix_mul_1000_LazyWorkerPercentage_20", "average_cert": 214.627}
+{"key": "lanczos_1000_LazyWorkerPercentage_20", "average_cert": 176.752}
+{"key": "merge_sort_1000_LazyWorkerPercentage_20", "average_cert": 195.528}
+{"key": "lanczos_100_LazyWorkerPercentage_30", "average_cert": 938.292}
+{"key": "fibonacci_100_LazyWorkerPercentage_30", "average_cert": 823.23}
+{"key": "fibonacci_iterative_pretty_100_LazyWorkerPercentage_30", "average_cert": 1066.666}
+{"key": "spf_100_LazyWorkerPercentage_30", "average_cert": 1115.191}
+{"key": "merge_sort_100_LazyWorkerPercentage_30", "average_cert": 1122.631}
+{"key": "matrix_mul_100_LazyWorkerPercentage_30", "average_cert": 1084.062}
+{"key": "spf_1000_LazyWorkerPercentage_30", "average_cert": 711.422}
+{"key": "fibonacci_iterative_pretty_1000_LazyWorkerPercentage_30", "average_cert": 428.06}
+{"key": "lanczos_1000_LazyWorkerPercentage_30", "average_cert": 389.54}
+{"key": "matrix_mul_1000_LazyWorkerPercentage_30", "average_cert": 433.089}
+{"key": "fibonacci_1000_LazyWorkerPercentage_30", "average_cert": 435.668}
+{"key": "merge_sort_1000_LazyWorkerPercentage_30", "average_cert": 453.675}
+{"key": "lanczos_100_LazyWorkerPercentage_40", "average_cert": 1180.06}
+{"key": "matrix_mul_100_LazyWorkerPercentage_40", "average_cert": 1210.444}
+{"key": "fibonacci_iterative_pretty_100_LazyWorkerPercentage_40", "average_cert": 1411.262}
+{"key": "fibonacci_100_LazyWorkerPercentage_40", "average_cert": 1057.348}
+{"key": "merge_sort_100_LazyWorkerPercentage_40", "average_cert": 1552.131}
+{"key": "spf_100_LazyWorkerPercentage_40", "average_cert": 1501.588}
+{"key": "matrix_mul_1000_LazyWorkerPercentage_40", "average_cert": 2175.75}
+{"key": "lanczos_1000_LazyWorkerPercentage_40", "average_cert": 1144.937}
+{"key": "fibonacci_1000_LazyWorkerPercentage_40", "average_cert": 1274.64}
+{"key": "merge_sort_1000_LazyWorkerPercentage_40", "average_cert": 780.445}
+{"key": "fibonacci_iterative_pretty_1000_LazyWorkerPercentage_40", "average_cert": 1171.964}
+{"key": "spf_1000_LazyWorkerPercentage_40", "average_cert": 1265.742}

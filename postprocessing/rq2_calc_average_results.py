@@ -1,4 +1,5 @@
 import json
+import jsonlines
 from tqdm import tqdm
 
 
@@ -25,18 +26,22 @@ class CalculateAverageResultsRQ2:
                     self.execution_count[key] += len(times)
 
     def compute_average(self):
-        averages = {}
+        averages = []
         for key in tqdm(self.execution_sum.keys(), desc="Computing average"):
-            averages[key] = {
+            data = {
+                "key": key,
                 "average_cert": round(
                     self.execution_sum[key] / self.execution_count[key], 3
                 ),
             }
+            averages.append(data)
         return averages
 
     def persist(self, averages):
-        with open(self.target_file, "w") as f:
-            json.dump(averages, f, indent=3)
+        with jsonlines.open(self.target_file, mode="w") as writer:
+            writer.write_all(averages)
+        # with open(self.target_file, "w") as f:
+        #    json.dump(averages, f, indent=3)
 
     def run(self):
         self.compute_sum_count()
