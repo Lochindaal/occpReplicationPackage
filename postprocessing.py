@@ -25,7 +25,7 @@ def main():
     subprocess.run(command, shell=True, check=True)
     # Calculate avarage costs
     post_proc_rq2_3.run()
-    # Create tex ready format
+    ## Create tex ready format
     post_proc_rq2_4.run()
     print("Done.")
 

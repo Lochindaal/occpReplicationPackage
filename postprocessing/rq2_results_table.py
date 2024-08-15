@@ -88,8 +88,43 @@ class TableCreatorRQ2:
 
         prepared_data = []
         for key, entry in tqdm(self.entries.items()):
+            prog_key = ""
+            scen_key = ""
+            match entry["program"]:
+                case "fibonacci_iterative_pretty":
+                    prog_key = "\\bpfibi"
+                case "fibonacci":
+                    prog_key = "\\bpfib"
+                case "matrix_mul":
+                    prog_key = "\\bpmat"
+                case "merge_sort":
+                    prog_key = "\\bpmer"
+                case "lanczos":
+                    prog_key = "\\bplaz"
+                case "spf":
+                    prog_key = "\\bpspf"
+            match entry["scenario"]:
+                case "HappyCase":
+                    scen_key = "\\schap"
+                case "MaliciousUser":
+                    scen_key = "\\scmal"
+                case (
+                    "LazyWorkerPercentage_10"
+                    | "LazyWorkerPercentage_20"
+                    | "LazyWorkerPercentage_30"
+                    | "LazyWorkerPercentage_40"
+                ):
+                    prts = entry["scenario"].split("_")
+                    scen_key = f"\\sclaz {prts[1]}\\%"
+                case "ERA":
+                    scen_key = "\\scera"
+
+            if prog_key == "" or scen_key == "":
+                print("FUBAR!")
+                continue
+
             entry["tex_entry"] = (
-                f"{entry['program']} & {entry['scenario']} & {entry['time_100']} & {entry['time_1000']} & {entry['gas_100']} & {entry['gas_1000']} & baseline_3 & baseline_20 \\"
+                f"{prog_key} & {scen_key} & {entry['time_100']} & {entry['time_1000']} & {entry['gas_100']} & {entry['gas_1000']} & {entry['statements_100']} & {entry['statements_1000']} & baseline_3 & baseline_20 \\"
             )
             prepared_data.append(entry)
         self.persist(prepared_data)
