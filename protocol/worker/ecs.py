@@ -187,7 +187,6 @@ class ExecutionCertificationSystem:
         self.logger.info(
             f"Transaction Cost: {receipt.gasUsed} ['vote', taskId: {task_id}, traceId: {trace_id}, accIdx: {acc_idx}]"
         )
-        
         self.log_gas_usage(receipt.gasUsed, "vote")
         return receipt, tx_hash
 
@@ -203,8 +202,7 @@ class ExecutionCertificationSystem:
         return self.contract.functions.getCertificates().call()
 
     def log_gas_usage(self, gasUsed, func_name):
-        run_key = f"{self.run_args['key']}_{self.run_args['scenario'].name}_{self.run_args['steps']}_{self.run_args['run_id']}"
-        data = {"key": run_key,
-                "function": func_name,
-                "gasUsed": gasUsed}
+        run_id = self.run_args["run_id"]
+        run_key = f"{self.run_args['key']}_{self.run_args['scenario'].name}_{self.run_args['steps']}_{run_id}"
+        data = {"key": run_key, "function": func_name, "gasUsed": gasUsed}
         write_thread_safe(data, self.transaction_log_file)

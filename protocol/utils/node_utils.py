@@ -77,7 +77,7 @@ def initialize_nodes(data, run_args):
     lazy_worker_nodes = []
     scenario = run_args["scenario"]
     if (
-            scenario == ExperimentScenarios.Config and mal_config.getboolean("Worker")
+        scenario == ExperimentScenarios.Config and mal_config.getboolean("Worker")
     ) or scenario == ExperimentScenarios.LazyWorker:
         lazy_worker_id = random.randint(1, 5)
         lazy_worker_node = start_worker(
@@ -89,9 +89,15 @@ def initialize_nodes(data, run_args):
         )
         lazy_worker_ids.append(lazy_worker_id)
         lazy_worker_nodes.append(lazy_worker_node)
-    elif scenario == ExperimentScenarios.LazyWorkerPercentage:
-        lazy_worker_percentage = run_args["lazyPerc"]
-        num_lazy_workers = int(node_config.getint("Certifiers") * (lazy_worker_percentage / 100))
+    elif scenario in (
+        ExperimentScenarios.LazyWorkerPercentage_10,
+        ExperimentScenarios.LazyWorkerPercentage_20,
+        ExperimentScenarios.LazyWorkerPercentage_30,
+        ExperimentScenarios.LazyWorkerPercentage_40,
+    ):
+        lazy_worker_percentage = int(scenario.name.split("_")[1])
+        certifier_count = node_config.getint("Certifiers")
+        num_lazy_workers = int(certifier_count * (lazy_worker_percentage / 100))
 
         for x in range(num_lazy_workers):
             lazy_worker_id = random.choice(
@@ -123,7 +129,7 @@ def initialize_nodes(data, run_args):
     )
 
     if (
-            mal_config.getint("User") != 1 and scenario == ExperimentScenarios.Config
+        mal_config.getint("User") != 1 and scenario == ExperimentScenarios.Config
     ) or scenario in (ExperimentScenarios.MaliciousUser, ExperimentScenarios.ERA):
         listener_type = ListenerType.CERT_FAILURE
     else:
@@ -133,6 +139,14 @@ def initialize_nodes(data, run_args):
         node_config.getint("Verifiers"), data, listener_type
     )
 
-    verifier_nodes_fail = []  #= start_listeners(node_config.getint("Verifiers"), data, ListenerType.CERT_FAILURE)
+    verifier_nodes_fail = (
+        []
+    )  # = start_listeners(node_config.getint("Verifiers"), data, ListenerType.CERT_FAILURE)
 
-    return sequencer_nodes, certifier_nodes, verifier_nodes, lazy_worker_nodes, verifier_nodes_fail
+    return (
+        sequencer_nodes,
+        certifier_nodes,
+        verifier_nodes,
+        lazy_worker_nodes,
+        verifier_nodes_fail,
+    )

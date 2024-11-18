@@ -17,8 +17,10 @@ from runner.experiment_scenarios import ExperimentScenarios
 
 
 class OCCPRunner(BaseRunner, ABC):
-    def __init__(self):
+    def __init__(self, program, step_size):
         super().__init__(2)
+        self.program = program
+        self.step_size = step_size
         self.address_list = self.load_address_list()
         self.reruns = int(self.config["EXPERIMENT"]["NumberReruns"])
         assert self.reruns <= len(self.address_list)
@@ -42,16 +44,59 @@ class OCCPRunner(BaseRunner, ABC):
         if run_single_test:
             scenarios = [ExperimentScenarios.Config]
         else:
-            # ToDo: Execute one scenario after the other. Blockchain get bloated with data and reduces speed
-            # ToDo: write function to remove data after certificate was issued or malicious actioins have been found!
             scenarios = [
-                #ExperimentScenarios.HappyCase,
-                # ExperimentScenarios.LazyWorker,
-                ExperimentScenarios.LazyWorkerPercentage,
-                #ExperimentScenarios.MaliciousUser,
-                #ExperimentScenarios.ERA,
+                ExperimentScenarios.HappyCase,
+                ExperimentScenarios.MaliciousUser,
+                ExperimentScenarios.ERA,
+                ExperimentScenarios.LazyWorkerPercentage_10,
+                ExperimentScenarios.LazyWorkerPercentage_20,
+                ExperimentScenarios.LazyWorkerPercentage_30,
+                ExperimentScenarios.LazyWorkerPercentage_40,
             ]
         return scenarios
+
+    def restart_container(self):
+        # restart docker container
+        container_name = "polygon-container"
+        command = ["docker", "restart", container_name]
+        try:
+            # Run the command and wait for it to complete
+            self.logger.info(f"Container '{container_name}' restarting...")
+            subprocess.run(command, check=True)
+            time.sleep(10)
+            self.logger.info(f"Container '{container_name}' restarted successfully.")
+        except subprocess.CalledProcessError as e:
+            self.logger.info(f"Error restarting container '{container_name}': {e}")
+        except FileNotFoundError:
+            self.logger.info("Docker is not installed or not in PATH.")
+
+    def execute_experiments_informed(self, program_list):
+        # Fetch configuration values outside the loops
+        program_base_dir = self.config["EXPERIMENT"]["ProgramBaseDir"]
+        run_single_test = self.config.getboolean("EXPERIMENT", "RunSingleTest")
+        # steps = json.loads(self.config["EXPERIMENT"]["StepsOccp"])
+        steps = [self.step_size]
+
+        # Create a list of scenarios based on the configuration
+        scenarios = self.get_scenarios(run_single_test)
+        results = []
+        for key, step in zip(program_list, steps):
+            program_path = os.path.join(program_base_dir, f"{key}.mona")
+            for scenario in scenarios:
+                self.delete_worker_directories()
+                run_args = {
+                    "key": key,
+                    "program_path": program_path,
+                    "steps": step,
+                    "scenario": scenario,
+                }
+                run_time = self.execute_reruns(run_args)
+                result = {f"{key}_{step}_{scenario.name}": run_time}
+                results.append(result)
+                path = os.path.join(self.base_path, "occp", "results.json")
+                save_json_lines(result, path)
+                self.restart_container()
+        return results
 
     def execute_experiments(self, program_list):
         # Fetch configuration values outside the loops
@@ -66,32 +111,18 @@ class OCCPRunner(BaseRunner, ABC):
             program_path = os.path.join(program_base_dir, f"{key}.mona")
             for step in steps:
                 for scenario in scenarios:
-                    if scenario == ExperimentScenarios.LazyWorkerPercentage:
-                        lazyworkerPerc = json.loads(
-                            self.config["NODES"]["LazyWorkerPercentages"]
-                        )
-                    else:
-                        lazyworkerPerc = [-1]
-
-                    for lazyWorkerP in lazyworkerPerc:
-                        self.delete_worker_directories()
-                        run_args = {
-                            "key": key,
-                            "program_path": program_path,
-                            "steps": step,
-                            "scenario": scenario,
-                            "lazyPerc": lazyWorkerP,
-                        }
-                        run_time = self.execute_reruns(run_args)
-                        if scenario == ExperimentScenarios.LazyWorkerPercentage:
-                            result = {
-                                f"{key}_{step}_{scenario.name}_{lazyWorkerP}": run_time
-                            }
-                        else:
-                            result = {f"{key}_{step}_{scenario.name}": run_time}
-                        results.append(result)
-                        path = os.path.join(self.base_path, "occp", "results.json")
-                        save_json_lines(result, path)
+                    self.delete_worker_directories()
+                    run_args = {
+                        "key": key,
+                        "program_path": program_path,
+                        "steps": step,
+                        "scenario": scenario,
+                    }
+                    run_time = self.execute_reruns(run_args)
+                    result = {f"{key}_{step}_{scenario.name}": run_time}
+                    results.append(result)
+                    path = os.path.join(self.base_path, "occp", "results.json")
+                    save_json_lines(result, path)
         return results
 
     def execute_rerunsNew(self, run_args):
@@ -101,7 +132,14 @@ class OCCPRunner(BaseRunner, ABC):
 
     def execute_reruns(self, run_args):
         # define the command as a list of arguments
-        command = [ "aws", "--endpoint-url=http://localhost:4566", "s3", "rm", "s3://ecs", "--recursive" ]
+        command = [
+            "aws",
+            "--endpoint-url=http://localhost:4566",
+            "s3",
+            "rm",
+            "s3://ecs",
+            "--recursive",
+        ]
         reruns = int(self.config["EXPERIMENT"]["NumberReruns"])
         exec_times = []
         for run in range(reruns):
@@ -114,10 +152,7 @@ class OCCPRunner(BaseRunner, ABC):
         return exec_times
 
     def write_execution_time(self, run_id, run_args, exec_times):
-        if run_args['scenario'] == ExperimentScenarios.LazyWorkerPercentage:
-            key = f"{run_args['key']}_{run_args['steps']}_{run_args['scenario'].name}_{run_args['lazyPerc']}_{run_id}"
-        else:
-            key = f"{run_args['key']}_{run_args['steps']}_{run_args['scenario'].name}_{run_id}"
+        key = f"{run_args['key']}_{run_args['steps']}_{run_args['scenario'].name}_{run_id}"
         output = {key: exec_times}
         path = os.path.join(self.base_path, "occp", "results_partial.json")
         save_json_lines(output, path)
@@ -126,8 +161,6 @@ class OCCPRunner(BaseRunner, ABC):
         self.delete_worker_directories()
         run_args["run_id"] = run_id
         reruns = self.config.getint("EXPERIMENT", "NumberReruns")
-        # self.delete_worker_directories()
-        # run_args["run_id"] = run_id
         self.logger.info(
             f"Starting {run_args['scenario'].name} for {run_args['key']} "
             f"(Run {run_id + 1}/{reruns})"
@@ -137,7 +170,9 @@ class OCCPRunner(BaseRunner, ABC):
         # init ecs lib
         base_address = self.config["NETWORK"]["BCBaseAddress"]
         ecs_list = [
-            init_ecs(f"{base_address}:{i}0002", self.address_list[run_id], run_args=run_args)
+            init_ecs(
+                f"{base_address}:{i}0002", self.address_list[run_id], run_args=run_args
+            )
             for i in range(1, 4)
         ]
 
@@ -162,29 +197,24 @@ class OCCPRunner(BaseRunner, ABC):
             certifier_nodes,
             verifier_nodes,
             lazy_worker_nodes,
-            failure_nodes
+            failure_nodes,
         ) = initialize_nodes(node_data, run_args)
 
-        if (
-            run_args["scenario"] == ExperimentScenarios.LazyWorker
-            or run_args["scenario"] == ExperimentScenarios.LazyWorkerPercentage
+        if run_args["scenario"] in (
+            ExperimentScenarios.LazyWorker,
+            ExperimentScenarios.LazyWorkerPercentage,
+            ExperimentScenarios.LazyWorkerPercentage_10,
+            ExperimentScenarios.LazyWorkerPercentage_20,
+            ExperimentScenarios.LazyWorkerPercentage_30,
+            ExperimentScenarios.LazyWorkerPercentage_40,
         ):
-            #first_to_start = lazy_worker_nodes + [random.choice(certifier_nodes)]
             first_to_start = lazy_worker_nodes + certifier_nodes
             random.shuffle(first_to_start)
             [x.start() for x in first_to_start]
-            # [x.join() for x in lazy_worker_nodes]
 
         [thread.start() for thread in certifier_nodes if not thread.is_alive()]
-
-        # not_fail = [t.is_alive() for t in failure_nodes]
-
-
-        # count_failed = len([x for x in failure_nodes if x.is_alive() == False])
-        # [t.join() for t in failure_nodes]
         [t.join() for t in verifier_nodes]
         end_time = time.time() - start_time
-        # kill_all.set()
         if len(lazy_worker_nodes) > 0:
             [x.join() for x in lazy_worker_nodes]
         [t.join() for t in certifier_nodes]
@@ -206,6 +236,11 @@ class OCCPRunner(BaseRunner, ABC):
         return user_type
 
     def run(self):
-        program_list = json.loads(self.config["EXPERIMENT"]["ProgramsOccp"])
+        # program_list = json.loads(self.config["EXPERIMENT"]["ProgramsOccp"])
+        program_list = [self.program]
+        isInformed = self.config["EXPERIMENT"]["IsInformedSteps"]
         DataStorage("ecs").create_bucket()
-        self.execute_experiments(program_list)
+        if isInformed:
+            self.execute_experiments_informed(program_list)
+        else:
+            self.execute_experiments(program_list)

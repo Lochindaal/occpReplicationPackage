@@ -23,9 +23,15 @@ class LocalRunner(BaseRunner, ABC):
 
     def run(self):
         program_list = json.loads(self.config["EXPERIMENT"]["Programs"])
-        results = self.execute_experiments(program_list)
+        isInformed = self.config["EXPERIMENT"]["IsInformedSteps"]
+        if isInformed:
+            results = self.execute_experiments_informed(program_list)
+        else:
+            results = self.execute_experiments(program_list)
         result_path = os.path.join(
-            self.base_path, self.config["DATA"]["LocalResultDir"], "local_results.pickle"
+            self.base_path,
+            self.config["DATA"]["LocalResultDir"],
+            "local_results.pickle",
         )
         with open(result_path, "wb") as handler:
             pickle.dump(results, handler)
@@ -69,9 +75,7 @@ class LocalRunner(BaseRunner, ABC):
             run_time = self.execute_reruns((key, path), 0, RunType.RUN)
             self.logger.info(f"TIME: {np.average(run_time)}")
             for step in steps:
-                step_result = {
-                    f"{key}_{step}": 1
-                }
+                step_result = {f"{key}_{step}": 1}
                 # run
                 self.add_to_result(result, step, run_time, MeasurementType.EXECUTION)
                 # record
@@ -96,3 +100,40 @@ class LocalRunner(BaseRunner, ABC):
             else:
                 results[key] = result
         return results
+
+    def execute_experiments_informed(self, program_list):
+        result_path = os.path.join(
+            self.base_path, self.config["DATA"]["LocalResultDir"], "local_results.json"
+        )
+        results = {}
+        steps = json.loads(self.config["EXPERIMENT"]["Steps"])
+        for key, step in zip(program_list, steps):
+            path = os.path.join(
+                self.config["EXPERIMENT"]["ProgramBaseDir"], f"{key}.mona"
+            )
+            result = {}
+            self.logger.info(f"Executing {key}")
+            run_time = self.execute_reruns((key, path), 0, RunType.RUN)
+            self.logger.info(f"TIME: {np.average(run_time)}")
+            step_result = {f"{key}_{step}": 1}
+            # run
+            self.add_to_result(result, step, run_time, MeasurementType.EXECUTION)
+            # record
+            self.logger.info(f"Recording {key} with {step}")
+            recording_time = self.execute_reruns((key, path), step, RunType.RUN_RECORD)
+            self.add_to_result(result, step, recording_time, MeasurementType.RECORDING)
+            self.logger.info(f"TIME: {np.average(recording_time)}")
+            # replay
+            self.logger.info(f"Replaying {key} with {step}")
+            replay_time = self.execute_reruns((key, path), step, RunType.RUN_REPLAY)
+            self.add_to_result(result, step, replay_time, MeasurementType.REPLAY)
+            self.logger.info(f"TIME: {np.average(replay_time)}")
+            # Open the JSONLines file for writing (append mode)
+            step_result[f"{key}_{step}"] = result[step]
+            save_json_lines(step_result, result_path)
+            if key not in results.keys():
+                results.update({key: result})
+            else:
+                results[key] = result
+        return results
+

@@ -8,9 +8,11 @@ from runner.occp_runner import OCCPRunner
 def main():
     parser = argparse.ArgumentParser(description="Parse an integer argument")
     parser.add_argument("--runtype", type=int, help="An integer argument")
+    parser.add_argument("--program", type=str)
+    parser.add_argument("--step_size", type=int)
 
     args = parser.parse_args()
-    args.runtype = 1
+    #args.runtype = 1
 
     if args.runtype is not None:
         print(f"Received runtype: {args.runtype}")
@@ -20,7 +22,7 @@ def main():
     if args.runtype == 0:
         runner = LocalRunner()
     elif args.runtype == 1:
-        runner = OCCPRunner()
+        runner = OCCPRunner(args.program, args.step_size)
     else:
         raise ValueError("Invalid run type")
 
