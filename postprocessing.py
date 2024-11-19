@@ -17,6 +17,62 @@ def persist(output_path, data):
         writer.write_all(data)
 
 
+def persist2(output_path, data):
+    with jsonlines.open(output_path, mode="w") as writer:
+        writer.write(data)
+
+
+def compute_increase(scenario_list, avg_time_data_per_scen):
+    data = []
+
+    increases = {
+        "avg_workload_perc": 0,
+        "avg_workload_times": 0,
+        "avg_vote_perc": 0,
+        "avg_vote_times": 0,
+        "workload_perc": [],
+        "vote_perc": [],
+        "workload_times": [],
+        "vote_times": [],
+    }
+
+    for scenario in scenario_list:
+
+        data_100 = [d for d in avg_time_data_per_scen if d["key"] == f"{scenario}_100"][
+            0
+        ]
+        data_1000 = [
+            d for d in avg_time_data_per_scen if d["key"] == f"{scenario}_1000"
+        ][0]
+
+        workload_calls_100 = data_100["mean_workload_call"]
+        workload_calls_1000 = data_1000["mean_workload_call"]
+        vote_calls_100 = data_100["mean_vote_call"]
+        vote_calls_1000 = data_1000["mean_vote_call"]
+
+        data.append(
+            {
+                "key": scenario,
+                "increase_workload": 100 / workload_calls_1000 * workload_calls_100,
+                "increase_vote": 100 / vote_calls_1000 * vote_calls_100,
+                "increase_workload_times": workload_calls_100 * workload_calls_1000,
+                "increase_vote_times": vote_calls_100 / vote_calls_1000,
+            }
+        )
+        increases["workload_perc"].append(
+            100 / workload_calls_1000 * workload_calls_100
+        )
+        increases["vote_perc"].append(100 / vote_calls_1000 * vote_calls_100)
+        increases["workload_times"].append(workload_calls_100 * workload_calls_1000)
+        increases["vote_times"].append(vote_calls_100 / vote_calls_1000)
+
+    increases["avg_workload_perc"] = np.mean(increases["workload_perc"])
+    increases["avg_workload_times"] = np.mean(increases["workload_times"])
+    increases["avg_vote_perc"] = np.mean(increases["vote_perc"])
+    increases["avg_vote_times"] = np.mean(increases["vote_times"])
+    return data, increases
+
+
 def compute_average_time(approach: str, work_data):
     sum_100_vote = {}
     sum_1000_vote = {}
@@ -94,16 +150,6 @@ def main():
 
     rq2_base_fp = "../data/rq2Data"
     base_output_fpath = os.path.join(rq2_base_fp, "processed")
-    work_data_naive = load_data_line(
-        os.path.join(base_output_fpath, f"worker_data_naive.jsonl")
-    )
-    work_data_occp = load_data_line(
-        os.path.join(base_output_fpath, f"worker_data_occp.jsonl")
-    )
-    avg_time_data = compute_average_time("occp", work_data_occp)
-    persist(
-        os.path.join(base_output_fpath, "avg_times_per_scenario.jsonl"), avg_time_data
-    )
 
     # for approach in ["naive", "occp"]:
     #    time_data_fpath = os.path.join(rq2_base_fp, approach, "results.jsonl")
@@ -120,6 +166,46 @@ def main():
     #    avg_gas_data = CalculateGasCostsRQ2(gas_data_fpath).run()
     #    output_path = os.path.join(base_output_fpath, f"gas_data_{approach}.jsonl")
     #    persist(output_path, avg_gas_data)
+
+    work_data_naive = load_data_line(
+        os.path.join(base_output_fpath, f"worker_data_naive.jsonl")
+    )
+    work_data_occp = load_data_line(
+        os.path.join(base_output_fpath, f"worker_data_occp.jsonl")
+    )
+
+    avg_time_data_occp = compute_average_time("occp", work_data_occp)
+    avg_time_data_naive = compute_average_time("naive", work_data_naive)
+    persist(
+        os.path.join(base_output_fpath, "avg_times_per_scenario_occp.jsonl"),
+        avg_time_data_occp,
+    )
+    persist(
+        os.path.join(base_output_fpath, "avg_times_per_scenario_naive.jsonl"),
+        avg_time_data_naive,
+    )
+
+    for approach in ["naive", "occp"]:
+        avgtps = load_data_line(
+            os.path.join(base_output_fpath, f"avg_times_per_scenario_{approach}.jsonl")
+        )
+        results, increases = compute_increase(
+            [
+                "ERA",
+                "HappyCase",
+                "MaliciousUser",
+                "LazyWorkerPercentage_10",
+                "LazyWorkerPercentage_20",
+                "LazyWorkerPercentage_30",
+                "LazyWorkerPercentage_40",
+            ],
+            avgtps,
+        )
+        persist(os.path.join(base_output_fpath, f"increases_{approach}.jsonl"), results)
+        persist2(
+            os.path.join(base_output_fpath, f"increases_avg_{approach}.jsonl"),
+            increases,
+        )
 
     # post_proc_rq1 = CalculateAverageResultsRQ1()
     # post_proc_rq2_1 = CalculateAverageResultsRQ2()
