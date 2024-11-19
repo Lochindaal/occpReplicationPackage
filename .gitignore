@@ -36,6 +36,7 @@ Icon
 **/hardhat/artifacts/
 **/hardhat/cache/
 **/hardhat/node_modules/
+**/hardhat/package-lock.json
 # Localstack
 **/localstack/volume/
 
@@ -44,3 +45,6 @@ Icon
 **/mona/mona.egg-info/
 ### OCCP ###
 *.egg-info/
+
+### Others ###
+scripts/

@@ -4,9 +4,10 @@ from tqdm import tqdm
 
 
 class CalculateGasCostsRQ2:
-    def __init__(self) -> None:
-        self.input_file = "./data/results/occp/all_transaction_logs.jsonl"
-        self.output_file = "./data/results/occp/gas_costs.jsonl"
+    def __init__(self, input_file: str) -> None:
+        self.input_file = input_file  # "./data/results/occp/all_transaction_logs.jsonl"
+        # self.approach = approach
+        # self.output_file = "./data/results/occp/gas_costs.jsonl"
         self.add_task_seq = {}
         self.add_traces = {}
         self.get_workload = {}
@@ -140,4 +141,5 @@ class CalculateGasCostsRQ2:
     def run(self):
         self.compute_sum()
         averages = self.compute_average()
-        self.persist(self.output_file, averages)
+        return averages
+        # self.persist(self.output_file, averages)

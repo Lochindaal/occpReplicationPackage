@@ -4,15 +4,15 @@ from tqdm import tqdm
 
 
 class CalculateAverageResultsRQ2:
-    def __init__(self):
-        self.result_file = "./data/results/occp/all_results.jsonl"
-        self.target_file = "./data/results/occp/avg_results.jsonl"
+    def __init__(self, input_file: str):
+        self.input_file = input_file  # "./data/results/occp/all_results.jsonl"
+        # self.target_file = "./data/results/occp/avg_results.jsonl"
         self.execution_sum = {}
         self.execution_count = {}
 
     def compute_sum_count(self):
         # Read the JSON lines file
-        with open(self.result_file, "r") as file:
+        with open(self.input_file, "r") as file:
             for line in tqdm(file, desc="Computing sum and count"):
                 data = json.loads(line)
                 # Iterate through each key in the JSON object
@@ -37,22 +37,23 @@ class CalculateAverageResultsRQ2:
             averages.append(data)
         return averages
 
-    def persist(self, averages):
-        with jsonlines.open(self.target_file, mode="w") as writer:
-            writer.write_all(averages)
-        # with open(self.target_file, "w") as f:
-        #    json.dump(averages, f, indent=3)
+    # def persist(self, averages):
+    #    with jsonlines.open(self.target_file, mode="w") as writer:
+    #        writer.write_all(averages)
+    #    # with open(self.target_file, "w") as f:
+    #    #    json.dump(averages, f, indent=3)
 
     def run(self):
         self.compute_sum_count()
         averages = self.compute_average()
-        self.persist(averages)
+        return averages
+        # self.persist(averages)
 
 
-def main():
-    calc = CalculateAverageResultsRQ2()
-    calc.run()
-
-
-if __name__ == "__main__":
-    main()
+# def main():
+#    calc = CalculateAverageResultsRQ2()
+#    calc.run()
+#
+#
+# if __name__ == "__main__":
+#    main()

@@ -4,9 +4,8 @@ import jsonlines
 
 
 class CalculateWorkerStatsRQ2:
-    def __init__(self):
-        self.result_file = "./data/results/occp/all_worker_results.jsonl"
-        self.target_file = "./data/results/occp/avg_worker_results.jsonl"
+    def __init__(self, input_file: str):
+        self.input_file = input_file
         self.statement_sum = {}
         self.statement_count = {}
         self.workload_sum = {}
@@ -19,7 +18,7 @@ class CalculateWorkerStatsRQ2:
     def compute_sum_count(self):
         # Read the JSON lines file
         counter = 0
-        with open(self.result_file, "r") as file:
+        with open(self.input_file, "r") as file:
             for line in tqdm(file, desc="Computing sum and count"):
                 counter += 1
                 try:
@@ -65,30 +64,33 @@ class CalculateWorkerStatsRQ2:
             data = {
                 "key": key,
                 "avg_stmts": self.statement_sum[key] / 30,
+                "avg_stmts_count": self.statement_count[key] / 30,
                 "avg_workload": self.workload_sum[key] / 30,
+                "avg_workload_count": self.workload_count[key] / 30,
                 "avg_replay": self.replay_sum[key] / 30,
+                "avg_replay_count": self.replay_count[key] / 30,
                 "avg_vote": self.vote_sum[key] / 30,
+                "avg_vote_count": self.vote_count[key] / 30,
             }
             averages.append(data)
 
         return averages
 
-    def persist(self, averages):
-        with jsonlines.open(self.target_file, mode="w") as writer:
-            writer.write_all(averages)
-        # with open(self.target_file, "w") as f:
-        #    json.dump(averages, f, indent=3)
+    # def persist(self, averages):
+    #    with jsonlines.open(self.target_file, mode="w") as writer:
+    #        writer.write_all(averages)
 
     def run(self):
         self.compute_sum_count()
         averages = self.compute_average()
-        self.persist(averages)
+        return averages
+        # self.persist(averages)
 
 
-def main():
-    calc = CalculateWorkerStatsRQ2()
-    calc.run()
+# def main():
+#    calc = CalculateWorkerStatsRQ2()
+#    calc.run()
 
-
-if __name__ == "__main__":
-    main()
+#
+# if __name__ == "__main__":
+#    main()
