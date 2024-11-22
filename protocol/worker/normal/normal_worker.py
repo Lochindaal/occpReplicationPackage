@@ -19,9 +19,11 @@ class NormalWorker(BaseWorker, ABC):
     def work(self):
         start_time = time.time()
         workload = self.get_workload()
-        self.data_writer.write_data(self.worker_id, 1, (time.time() - start_time), self.client_type.name)
+        self.data_writer.write_data(
+            self.worker_id, 1, (time.time() - start_time), self.client_type.name
+        )
         if workload is None:
-            if self.sleep_time < 20:
+            if self.sleep_time < 10:
                 self.sleep_time += 1
             return
         task_id = workload["taskId"]
@@ -29,6 +31,8 @@ class NormalWorker(BaseWorker, ABC):
         self.logger.info(
             f"Certifier {self.worker_id} working on trace {trace_id} from task {task_id}"
         )
+        if self.killAll.isSet():
+            return
         runner = TaskRunner(workload)
         error = False
         try:
@@ -40,7 +44,9 @@ class NormalWorker(BaseWorker, ABC):
                 trace_id,
                 self.logger,
             )
-            self.data_writer.write_data(self.worker_id, 3, (time.time() - start_time), self.client_type.name)
+            self.data_writer.write_data(
+                self.worker_id, 3, (time.time() - start_time), self.client_type.name
+            )
             # if DEBUG:
             self.logger.debug(
                 f"--- {(time.time() - start_time)} seconds to replay snapshot"
@@ -55,7 +61,9 @@ class NormalWorker(BaseWorker, ABC):
             )
 
             # stmts_path = os.path.join(self.config["DATA"]["OccpResultDir"], "stmts.json")
-            self.data_writer.write_data(self.worker_id, 4, executed_stmts, self.client_type.name)
+            self.data_writer.write_data(
+                self.worker_id, 4, executed_stmts, self.client_type.name
+            )
             # write_thread_safe({f"{self.worker_id}_{task_id}_{trace_id}": executed_stmts}, stmts_path)
             result_dict = generated_env.__dict__
             del result_dict["_exec_mode"]
@@ -88,6 +96,7 @@ class NormalWorker(BaseWorker, ABC):
         logger.info(
             f"--- {(time.time() - start_time)} seconds to replay snapshot [TaskId: {task_id} TraceId: {trace_id}]---"
         )
+
 
 # # ToDo: stop job certifiers if there are no openTasks anymore
 # # ToDo: check removeTask function in solidiy contract (0 remains for some reason)

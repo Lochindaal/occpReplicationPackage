@@ -39,7 +39,7 @@ class BaseWorker:
         while not self.killAll.isSet():
             self.work()
             time.sleep(self.sleep_time)
-            if self.loop_break:
+            if self.loop_break or self.killAll.isSet():
                 break
         print(f"Worker {self.worker_id} ended...")
 
@@ -72,7 +72,9 @@ class BaseWorker:
                 f"--- {time.time() - start_time} seconds to vote "
                 f"(with {retry_counter - 1} retries) [Task|Trace: {task_id}|{trace_id}] - Target: {target_hash}"
             )
-            self.data_writer.write_data(self.worker_id, 2, (time.time()-start_time), self.client_type.name)
+            self.data_writer.write_data(
+                self.worker_id, 2, (time.time() - start_time), self.client_type.name
+            )
         except Exception as e:
             self.logger.error(e)
         return task_id, trace_id
