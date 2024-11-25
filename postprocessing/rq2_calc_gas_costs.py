@@ -68,7 +68,10 @@ class CalculateGasCostsRQ2:
                     self.transaction_costs[key].append(value)
 
     def format_number(self, num):
-        return np.round(num / (10**6), 3)
+        if not np.isnan(num):
+            return np.round(num / (10**6), 3)
+        else:
+            return 0.0
 
     def compute_average(self):
         averages = []
@@ -83,49 +86,77 @@ class CalculateGasCostsRQ2:
                             "average_formatted": self.format_number(
                                 np.sum(self.transaction_costs[key]) / 30
                             ),
-                            "mean": np.mean(self.transaction_costs[key]),
+                            "mean": (
+                                np.mean(self.transaction_costs[key])
+                                if len(self.transaction_costs[key]) > 0
+                                else 0
+                            ),
                         },
                         "add_task": {
                             "average": np.sum(self.add_task_seq[key]) / 30,
                             "average_formatted": self.format_number(
                                 np.sum(self.add_task_seq[key]) / 30
                             ),
-                            "mean": np.mean(self.add_task_seq[key]),
+                            "mean": (
+                                np.mean(self.add_task_seq[key])
+                                if len(self.add_task_seq[key]) > 0
+                                else 0
+                            ),
                         },
                         "add_traces": {
                             "average": np.sum(self.add_traces[key]) / 30,
                             "average_formatted": self.format_number(
                                 np.sum(self.add_traces[key]) / 30
                             ),
-                            "mean": np.mean(self.add_traces[key]),
+                            "mean": (
+                                np.mean(self.add_traces[key])
+                                if len(self.add_traces[key]) > 0
+                                else 0
+                            ),
                         },
                         "vote": {
                             "average": np.sum(self.vote[key]) / 30,
                             "average_formatted": self.format_number(
                                 np.sum(self.vote[key]) / 30
                             ),
-                            "mean": np.mean(self.vote[key]),
+                            "mean": (
+                                np.mean(self.vote[key])
+                                if len(self.vote[key]) > 0
+                                else 0
+                            ),
                         },
                         "get_workload": {
                             "average": np.sum(self.get_workload[key]) / 30,
                             "average_formatted": self.format_number(
                                 np.sum(self.get_workload[key]) / 30
                             ),
-                            "mean": np.mean(self.get_workload[key]),
+                            "mean": (
+                                np.mean(self.get_workload[key])
+                                if len(self.get_workload[key]) > 0
+                                else 0
+                            ),
                         },
                         "upload_sequence": {
                             "average": np.sum(self.upload_sequences[key]) / 30,
                             "average_formatted": self.format_number(
                                 np.sum(self.upload_sequences[key]) / 30
                             ),
-                            "mean": np.mean(self.upload_sequences[key]),
+                            "mean": (
+                                np.mean(self.upload_sequences[key])
+                                if len(self.upload_sequences[key]) > 0
+                                else 0
+                            ),
                         },
                         "upload_conflicts": {
                             "average": np.sum(self.upload_conflicts[key]) / 30,
                             "average_formatted": self.format_number(
                                 np.sum(self.upload_conflicts[key]) / 30
                             ),
-                            "mean": np.mean(self.upload_conflicts[key]),
+                            "mean": (
+                                np.mean(self.upload_conflicts[key])
+                                if len(self.upload_conflicts[key]) > 0
+                                else 0
+                            ),
                         },
                     },
                 }

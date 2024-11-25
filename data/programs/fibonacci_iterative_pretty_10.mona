@@ -31,10 +31,19 @@ decl print_res(n) {
 
 decl main() {
     var i = -1;
-    while (i < 18) {
+    while (i < 99) {
         print_res(i);
         i = i + 1;
     }
 }
 
+main();
+main();
+main();
+main();
+main();
+main();
+main();
+main();
+main();
 main();

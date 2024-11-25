@@ -23,7 +23,7 @@ class LocalRunner(BaseRunner, ABC):
 
     def run(self):
         program_list = json.loads(self.config["EXPERIMENT"]["Programs"])
-        isInformed = self.config["EXPERIMENT"]["IsInformedSteps"]
+        isInformed = self.config.getboolean("EXPERIMENT", "IsInformedSteps")
         if isInformed:
             results = self.execute_experiments_informed(program_list)
         else:
@@ -136,4 +136,3 @@ class LocalRunner(BaseRunner, ABC):
             else:
                 results[key] = result
         return results
-

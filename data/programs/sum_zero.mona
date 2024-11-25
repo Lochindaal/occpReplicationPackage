@@ -1,8 +1,0 @@
-decl sum_zero(n) {
-    if (n <= 0) {
-        ret n;
-    }
-    ret n + sum_zero(n - 1);
-}
-
-println(sum_zero(3));

@@ -11,6 +11,8 @@ from postprocessing.rq2_calc_gas_costs import CalculateGasCostsRQ2
 from postprocessing.rq2_results_table import TableCreatorRQ2
 import subprocess
 
+from postprocessing.rq3_table import RQ3TableCreator
+
 
 def persist(output_path, data):
     with jsonlines.open(output_path, mode="w") as writer:
@@ -146,10 +148,67 @@ def compute_average_time(approach: str, work_data):
     return data
 
 
-def main():
-
+def compute_rq2_results():
     rq2_base_fp = "../data/rq2Data"
     base_output_fpath = os.path.join(rq2_base_fp, "processed")
+
+    for approach in ["naive", "occp"]:
+        time_data_fpath = os.path.join(rq2_base_fp, approach, "results.jsonl")
+        gas_data_fpath = os.path.join(rq2_base_fp, approach, "transaction_logs.jsonl")
+        worker_data_fpath = os.path.join(rq2_base_fp, approach, "worker_results.jsonl")
+        base_output_fpath = os.path.join(rq2_base_fp, "processed")
+
+        avg_time_data = CalculateAverageResultsRQ2(time_data_fpath).run()
+        output_path = os.path.join(base_output_fpath, f"time_data_{approach}.jsonl")
+        persist(output_path, avg_time_data)
+        avg_worker_data = CalculateWorkerStatsRQ2(worker_data_fpath).run()
+        output_path = os.path.join(base_output_fpath, f"worker_data_{approach}.jsonl")
+        persist(output_path, avg_worker_data)
+        avg_gas_data = CalculateGasCostsRQ2(gas_data_fpath).run()
+        output_path = os.path.join(base_output_fpath, f"gas_data_{approach}.jsonl")
+        persist(output_path, avg_gas_data)
+
+
+def compute_rq3_results():
+    print("START")
+    rq3_base_fp = "../data/rq3Data"
+    base_output_fpath = os.path.join(rq3_base_fp, "processed")
+    for approach in ["naive", "occp"]:
+        time_data_fpath = os.path.join(rq3_base_fp, approach, "results.jsonl")
+        gas_data_fpath = os.path.join(rq3_base_fp, approach, "transaction_logs.jsonl")
+        worker_data_fpath = os.path.join(rq3_base_fp, approach, "worker_results.jsonl")
+        base_output_fpath = os.path.join(rq3_base_fp, "processed")
+
+        avg_time_data = CalculateAverageResultsRQ2(time_data_fpath).run()
+        output_path = os.path.join(base_output_fpath, f"time_data_{approach}.jsonl")
+        persist(output_path, avg_time_data)
+        avg_worker_data = CalculateWorkerStatsRQ2(worker_data_fpath).run()
+        output_path = os.path.join(base_output_fpath, f"worker_data_{approach}.jsonl")
+        persist(output_path, avg_worker_data)
+        avg_gas_data = CalculateGasCostsRQ2(gas_data_fpath).run()
+        output_path = os.path.join(base_output_fpath, f"gas_data_{approach}.jsonl")
+        persist(output_path, avg_gas_data)
+
+    rq3_table_creator = RQ3TableCreator()
+    rq3_table_creator.create()
+
+
+def main():
+    # compute_rq2_results()
+    compute_rq3_results()
+
+    # rq2_base_fp = "../data/rq2Data"
+    # base_output_fpath = os.path.join(rq2_base_fp, "processed")
+    # work_data_naive = load_data_line(
+    #    os.path.join(base_output_fpath, f"worker_data_naive.jsonl")
+    # )
+    # work_data_occp = load_data_line(
+    #    os.path.join(base_output_fpath, f"worker_data_occp.jsonl")
+    # )
+    # avg_time_data = compute_average_time("occp", work_data_occp)
+    # persist(
+    #    os.path.join(base_output_fpath, "avg_times_per_scenario.jsonl"), avg_time_data
+    # )
 
     # for approach in ["naive", "occp"]:
     #    time_data_fpath = os.path.join(rq2_base_fp, approach, "results.jsonl")
