@@ -226,45 +226,45 @@ def main():
     #    output_path = os.path.join(base_output_fpath, f"gas_data_{approach}.jsonl")
     #    persist(output_path, avg_gas_data)
 
-    work_data_naive = load_data_line(
-        os.path.join(base_output_fpath, f"worker_data_naive.jsonl")
-    )
-    work_data_occp = load_data_line(
-        os.path.join(base_output_fpath, f"worker_data_occp.jsonl")
-    )
+    # work_data_naive = load_data_line(
+    #    os.path.join(base_output_fpath, f"worker_data_naive.jsonl")
+    # )
+    # work_data_occp = load_data_line(
+    #    os.path.join(base_output_fpath, f"worker_data_occp.jsonl")
+    # )
 
-    avg_time_data_occp = compute_average_time("occp", work_data_occp)
-    avg_time_data_naive = compute_average_time("naive", work_data_naive)
-    persist(
-        os.path.join(base_output_fpath, "avg_times_per_scenario_occp.jsonl"),
-        avg_time_data_occp,
-    )
-    persist(
-        os.path.join(base_output_fpath, "avg_times_per_scenario_naive.jsonl"),
-        avg_time_data_naive,
-    )
+    # avg_time_data_occp = compute_average_time("occp", work_data_occp)
+    # avg_time_data_naive = compute_average_time("naive", work_data_naive)
+    # persist(
+    #    os.path.join(base_output_fpath, "avg_times_per_scenario_occp.jsonl"),
+    #    avg_time_data_occp,
+    # )
+    # persist(
+    #    os.path.join(base_output_fpath, "avg_times_per_scenario_naive.jsonl"),
+    #    avg_time_data_naive,
+    # )
 
-    for approach in ["naive", "occp"]:
-        avgtps = load_data_line(
-            os.path.join(base_output_fpath, f"avg_times_per_scenario_{approach}.jsonl")
-        )
-        results, increases = compute_increase(
-            [
-                "ERA",
-                "HappyCase",
-                "MaliciousUser",
-                "LazyWorkerPercentage_10",
-                "LazyWorkerPercentage_20",
-                "LazyWorkerPercentage_30",
-                "LazyWorkerPercentage_40",
-            ],
-            avgtps,
-        )
-        persist(os.path.join(base_output_fpath, f"increases_{approach}.jsonl"), results)
-        persist2(
-            os.path.join(base_output_fpath, f"increases_avg_{approach}.jsonl"),
-            increases,
-        )
+    # for approach in ["naive", "occp"]:
+    #    avgtps = load_data_line(
+    #        os.path.join(base_output_fpath, f"avg_times_per_scenario_{approach}.jsonl")
+    #    )
+    #    results, increases = compute_increase(
+    #        [
+    #            "ERA",
+    #            "HappyCase",
+    #            "MaliciousUser",
+    #            "LazyWorkerPercentage_10",
+    #            "LazyWorkerPercentage_20",
+    #            "LazyWorkerPercentage_30",
+    #            "LazyWorkerPercentage_40",
+    #        ],
+    #        avgtps,
+    #    )
+    #    persist(os.path.join(base_output_fpath, f"increases_{approach}.jsonl"), results)
+    #    persist2(
+    #        os.path.join(base_output_fpath, f"increases_avg_{approach}.jsonl"),
+    #        increases,
+    #    )
 
     # post_proc_rq1 = CalculateAverageResultsRQ1()
     # post_proc_rq2_1 = CalculateAverageResultsRQ2()

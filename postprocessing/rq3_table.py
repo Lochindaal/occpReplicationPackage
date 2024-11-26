@@ -135,6 +135,7 @@ class RQ3TableCreator:
                     ),
                 )
             )
+            sorted_data["END"] = {"prog": "END", "scenario": "END", "approach": "END"}
             for (_, entry), (_, nextEntry) in pairwise(sorted_data.items()):
                 try:
                     prog_rows = ""
