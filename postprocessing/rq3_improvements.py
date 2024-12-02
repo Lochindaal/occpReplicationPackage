@@ -52,12 +52,13 @@ class Rq3Improvements:
         relative_change[naive == 0] = np.nan  # Handle division by zero cases
 
         if len(relative_change) == 0:
-            return {}
+            return {}, []
         # Magnitude increase/decrease
         magnitude_change = np.abs(ours - naive)
 
         # Fold increase/decrease
-        fold_change = ours / naive
+        # fold_change = ours / naive
+        fold_change = naive / ours
         fold_change[naive == 0] = (
             np.inf
         )  # Handle division by zero cases (infinite fold change)
@@ -87,17 +88,25 @@ class Rq3Improvements:
 
         # Example scenario-level insights
         isFaster = np.nanmean(relative_change) < 0
+        texts = []
         if isFaster:
+
+            texts.append(
+                f"Our approach uses up to {np.nanmax(fold_change)}-fold less {name[0]} compared to the baseline for {name[1]} using a multiplier of {name[2]}"
+            )
             print(
                 f"{name}\n"
                 f"Our approach uses up to {np.nanmax(fold_change)}-fold less {name[0]} compared to the baseline for {name[1]} using a multiplier of {name[2]}"
             )
         else:
+            texts.append(
+                f"Our approach uses up to {np.nanmax(fold_change)}-fold more {name[0]} compared to the baseline for {name[1]} using a multiplier of {name[2]}"
+            )
             print(
                 f"{name}\n"
                 f"Our approach uses up to {np.nanmax(fold_change)}-fold more {name[0]} compared to the baseline for {name[1]} using a multiplier of {name[2]}"
             )
-        return stats
+        return stats, texts
 
     def run(self, data_naive, data_occp):
         time_data = self.create_scenario_lists(data_naive, data_occp, "avgTime")
@@ -105,6 +114,7 @@ class Rq3Improvements:
         exp_data = self.create_scenario_lists(data_naive, data_occp, "avgExp")
 
         results = []  # {"time": {}, "gas": {}, "exp": {}}
+        all_texts = []
         # results = {}
         for scenario in [
             "All",
@@ -117,31 +127,20 @@ class Rq3Improvements:
         ]:
             for multiplier in ["all", "1", "10", "100", "1000"]:
                 print(f"{scenario} stats:")
-                results.append(
-                    {
-                        "key": f"time_{scenario}_{multiplier}",
-                        "stats": self.calculate_stats(
-                            ("Time", scenario, multiplier),
-                            time_data[scenario][multiplier],
-                        ),
-                    }
+                stats, texts = self.calculate_stats(
+                    ("Time", scenario, multiplier), time_data[scenario][multiplier]
                 )
-                results.append(
-                    {
-                        "key": f"gas_{scenario}_{multiplier}",
-                        "stats": self.calculate_stats(
-                            ("Gas", scenario, multiplier),
-                            gas_data[scenario][multiplier],
-                        ),
-                    }
+                all_texts.extend(texts)
+                results.append({"key": f"time_{scenario}_{multiplier}", "stats": stats})
+                stats, texts = self.calculate_stats(
+                    ("Gas", scenario, multiplier), gas_data[scenario][multiplier]
                 )
-                results.append(
-                    {
-                        "key": f"exp_{scenario}_{multiplier}",
-                        "stats": self.calculate_stats(
-                            ("Expressions", scenario, multiplier),
-                            exp_data[scenario][multiplier],
-                        ),
-                    }
+                all_texts.extend(texts)
+                results.append({"key": f"gas_{scenario}_{multiplier}", "stats": stats})
+                stats, texts = self.calculate_stats(
+                    ("Expressions", scenario, multiplier),
+                    exp_data[scenario][multiplier],
                 )
-        return results
+                all_texts.extend(texts)
+                results.append({"key": f"exp_{scenario}_{multiplier}", "stats": stats})
+        return results, all_texts
