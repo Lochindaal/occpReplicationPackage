@@ -6,6 +6,7 @@ import jsonlines
 class CalculateWorkerStatsRQ2:
     def __init__(self, input_file: str):
         self.input_file = input_file
+        self.key_count = {}
         self.statement_sum = {}
         self.statement_count = {}
         self.workload_sum = {}
@@ -29,6 +30,13 @@ class CalculateWorkerStatsRQ2:
 
                 parts = data["key"].split("_")
                 key = "_".join(parts[:-1])
+                if key not in self.key_count:
+                    self.key_count[key] = {"entries": [], "count": 0}
+                else:
+                    self.key_count[key]["entries"].append(data["key"])
+                    self.key_count[key]["count"] = len(
+                        set(self.key_count[key]["entries"])
+                    )
                 entry_type = data["Type"]
                 if entry_type == "STMTS":
                     values = data["Statements"]
@@ -63,14 +71,17 @@ class CalculateWorkerStatsRQ2:
         for key in tqdm(self.statement_sum.keys(), desc="Computing average"):
             data = {
                 "key": key,
-                "avg_stmts": self.statement_sum[key] / 30,
-                "avg_stmts_count": self.statement_count[key] / 30,
-                "avg_workload": self.workload_sum[key] / 30,
-                "avg_workload_count": self.workload_count[key] / 30,
-                "avg_replay": self.replay_sum[key] / 30,
-                "avg_replay_count": self.replay_count[key] / 30,
-                "avg_vote": self.vote_sum[key] / 30,
-                "avg_vote_count": self.vote_count[key] / 30,
+                "avg_stmts": self.statement_sum[key] / self.key_count[key]["count"],
+                "avg_stmts_count": self.statement_count[key]
+                / self.key_count[key]["count"],
+                "avg_workload": self.workload_sum[key] / self.key_count[key]["count"],
+                "avg_workload_count": self.workload_count[key]
+                / self.key_count[key]["count"],
+                "avg_replay": self.replay_sum[key] / self.key_count[key]["count"],
+                "avg_replay_count": self.replay_count[key]
+                / self.key_count[key]["count"],
+                "avg_vote": self.vote_sum[key] / self.key_count[key]["count"],
+                "avg_vote_count": self.vote_count[key] / self.key_count[key]["count"],
             }
             averages.append(data)
 

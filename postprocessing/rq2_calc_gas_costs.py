@@ -8,6 +8,7 @@ class CalculateGasCostsRQ2:
         self.input_file = input_file  # "./data/results/occp/all_transaction_logs.jsonl"
         # self.approach = approach
         # self.output_file = "./data/results/occp/gas_costs.jsonl"
+        self.key_count = {}
         self.add_task_seq = {}
         self.add_traces = {}
         self.get_workload = {}
@@ -47,6 +48,12 @@ class CalculateGasCostsRQ2:
                 self.upload_conflicts[key] = []
                 self.transaction_costs[key] = []
 
+            if key not in self.key_count:
+                self.key_count[key] = {"entries": [], "count": 0}
+            else:
+                self.key_count[key]["entries"].append(obj["key"])
+                self.key_count[key]["count"] = len(set(self.key_count[key]["entries"]))
+
             match entry_type:
                 case "add_task_seq":
                     self.add_task_seq[key].append(value)
@@ -82,9 +89,11 @@ class CalculateGasCostsRQ2:
                     "key": key,
                     "averages": {
                         "total_costs": {
-                            "average": np.sum(self.transaction_costs[key]) / 30,
+                            "average": np.sum(self.transaction_costs[key])
+                            / self.key_count[key]["count"],
                             "average_formatted": self.format_number(
-                                np.sum(self.transaction_costs[key]) / 30
+                                np.sum(self.transaction_costs[key])
+                                / self.key_count[key]["count"]
                             ),
                             "mean": (
                                 np.mean(self.transaction_costs[key])
@@ -93,9 +102,11 @@ class CalculateGasCostsRQ2:
                             ),
                         },
                         "add_task": {
-                            "average": np.sum(self.add_task_seq[key]) / 30,
+                            "average": np.sum(self.add_task_seq[key])
+                            / self.key_count[key]["count"],
                             "average_formatted": self.format_number(
-                                np.sum(self.add_task_seq[key]) / 30
+                                np.sum(self.add_task_seq[key])
+                                / self.key_count[key]["count"]
                             ),
                             "mean": (
                                 np.mean(self.add_task_seq[key])
@@ -104,9 +115,11 @@ class CalculateGasCostsRQ2:
                             ),
                         },
                         "add_traces": {
-                            "average": np.sum(self.add_traces[key]) / 30,
+                            "average": np.sum(self.add_traces[key])
+                            / self.key_count[key]["count"],
                             "average_formatted": self.format_number(
-                                np.sum(self.add_traces[key]) / 30
+                                np.sum(self.add_traces[key])
+                                / self.key_count[key]["count"]
                             ),
                             "mean": (
                                 np.mean(self.add_traces[key])
@@ -115,9 +128,10 @@ class CalculateGasCostsRQ2:
                             ),
                         },
                         "vote": {
-                            "average": np.sum(self.vote[key]) / 30,
+                            "average": np.sum(self.vote[key])
+                            / self.key_count[key]["count"],
                             "average_formatted": self.format_number(
-                                np.sum(self.vote[key]) / 30
+                                np.sum(self.vote[key]) / self.key_count[key]["count"]
                             ),
                             "mean": (
                                 np.mean(self.vote[key])
@@ -126,9 +140,11 @@ class CalculateGasCostsRQ2:
                             ),
                         },
                         "get_workload": {
-                            "average": np.sum(self.get_workload[key]) / 30,
+                            "average": np.sum(self.get_workload[key])
+                            / self.key_count[key]["count"],
                             "average_formatted": self.format_number(
-                                np.sum(self.get_workload[key]) / 30
+                                np.sum(self.get_workload[key])
+                                / self.key_count[key]["count"]
                             ),
                             "mean": (
                                 np.mean(self.get_workload[key])
@@ -137,9 +153,11 @@ class CalculateGasCostsRQ2:
                             ),
                         },
                         "upload_sequence": {
-                            "average": np.sum(self.upload_sequences[key]) / 30,
+                            "average": np.sum(self.upload_sequences[key])
+                            / self.key_count[key]["count"],
                             "average_formatted": self.format_number(
-                                np.sum(self.upload_sequences[key]) / 30
+                                np.sum(self.upload_sequences[key])
+                                / self.key_count[key]["count"]
                             ),
                             "mean": (
                                 np.mean(self.upload_sequences[key])
@@ -148,9 +166,11 @@ class CalculateGasCostsRQ2:
                             ),
                         },
                         "upload_conflicts": {
-                            "average": np.sum(self.upload_conflicts[key]) / 30,
+                            "average": np.sum(self.upload_conflicts[key])
+                            / self.key_count[key]["count"],
                             "average_formatted": self.format_number(
-                                np.sum(self.upload_conflicts[key]) / 30
+                                np.sum(self.upload_conflicts[key])
+                                / self.key_count[key]["count"]
                             ),
                             "mean": (
                                 np.mean(self.upload_conflicts[key])
