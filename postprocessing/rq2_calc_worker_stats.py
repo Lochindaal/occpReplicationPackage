@@ -1,3 +1,4 @@
+import numpy as np
 import json
 from tqdm import tqdm
 import jsonlines
@@ -7,6 +8,7 @@ class CalculateWorkerStatsRQ2:
     def __init__(self, input_file: str):
         self.input_file = input_file
         self.key_count = {}
+        self.stmts_val = {}
         self.statement_sum = {}
         self.statement_count = {}
         self.workload_sum = {}
@@ -43,6 +45,7 @@ class CalculateWorkerStatsRQ2:
                 else:
                     values = data["Time"]
                 if key not in self.statement_sum:
+                    self.stmts_val[key] = []
                     self.statement_sum[key] = 0
                     self.statement_count[key] = 0
                     self.workload_sum[key] = 0
@@ -54,6 +57,7 @@ class CalculateWorkerStatsRQ2:
 
                 # Calculate and update the sum and count for each type
                 if entry_type == "STMTS":
+                    self.stmts_val[key].append(values)
                     self.statement_sum[key] += values
                     self.statement_count[key] += 1
                 if entry_type == "VOTE":
@@ -74,6 +78,10 @@ class CalculateWorkerStatsRQ2:
                 "avg_stmts": self.statement_sum[key] / self.key_count[key]["count"],
                 "avg_stmts_count": self.statement_count[key]
                 / self.key_count[key]["count"],
+                "mean_stmts": np.mean(self.stmts_val[key]),
+                "median_stmts": np.median(self.stmts_val[key]),
+                "var_stmts": np.var(self.stmts_val[key]),
+                "std_stmts": np.std(self.stmts_val[key]),
                 "avg_workload": self.workload_sum[key] / self.key_count[key]["count"],
                 "avg_workload_count": self.workload_count[key]
                 / self.key_count[key]["count"],

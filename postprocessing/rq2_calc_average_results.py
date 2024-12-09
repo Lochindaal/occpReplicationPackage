@@ -1,12 +1,14 @@
 import json
 import jsonlines
 from tqdm import tqdm
+import numpy as np
 
 
 class CalculateAverageResultsRQ2:
     def __init__(self, input_file: str):
         self.input_file = input_file  # "./data/results/occp/all_results.jsonl"
         # self.target_file = "./data/results/occp/avg_results.jsonl"
+        self.exec_values = {}
         self.execution_sum = {}
         self.execution_count = {}
 
@@ -18,10 +20,12 @@ class CalculateAverageResultsRQ2:
                 # Iterate through each key in the JSON object
                 for key, times in data.items():
                     if key not in self.execution_sum:
+                        self.exec_values[key] = []
                         self.execution_sum[key] = 0
                         self.execution_count[key] = 0
 
                     # Calculate and update the sum and count for each type
+                    self.exec_values[key].append(times)
                     self.execution_sum[key] += sum(times)
                     self.execution_count[key] += len(times)
 
@@ -33,6 +37,10 @@ class CalculateAverageResultsRQ2:
                 "average_cert": round(
                     self.execution_sum[key] / self.execution_count[key], 3
                 ),
+                "mean": np.mean(self.exec_values[key]),
+                "median": np.median(self.exec_values[key]),
+                "var": np.var(self.exec_values[key]),
+                "std": np.std(self.exec_values[key]),
             }
             averages.append(data)
         return averages

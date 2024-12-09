@@ -9,6 +9,7 @@ class CalculateGasCostsRQ2:
         # self.approach = approach
         # self.output_file = "./data/results/occp/gas_costs.jsonl"
         self.key_count = {}
+        self.all_values = {}
         self.add_task_seq = {}
         self.add_traces = {}
         self.get_workload = {}
@@ -40,6 +41,7 @@ class CalculateGasCostsRQ2:
             value = obj["gasUsed"]
 
             if key not in self.transaction_costs:
+                self.all_values[key] = []
                 self.add_task_seq[key] = []
                 self.add_traces[key] = []
                 self.get_workload[key] = []
@@ -97,6 +99,21 @@ class CalculateGasCostsRQ2:
                             ),
                             "mean": (
                                 np.mean(self.transaction_costs[key])
+                                if len(self.transaction_costs[key]) > 0
+                                else 0
+                            ),
+                            "median": (
+                                np.median(self.transaction_costs[key])
+                                if len(self.transaction_costs[key]) > 0
+                                else 0
+                            ),
+                            "var": (
+                                np.var(self.transaction_costs[key])
+                                if len(self.transaction_costs[key]) > 0
+                                else 0
+                            ),
+                            "std": (
+                                np.std(self.transaction_costs[key])
                                 if len(self.transaction_costs[key]) > 0
                                 else 0
                             ),
