@@ -18,8 +18,9 @@ class MeasurementType(Enum):
 
 
 class LocalRunner(BaseRunner, ABC):
-    def __init__(self):
-        super().__init__(2)
+    def __init__(self, is_naive=False):
+        config_file = "occp_naive.ini" if is_naive else "occp_config.ini"
+        super().__init__(2, config_file)
 
     def run(self):
         program_list = json.loads(self.config["EXPERIMENT"]["Programs"])
@@ -48,9 +49,7 @@ class LocalRunner(BaseRunner, ABC):
         base_dump_dir = self.config["EXPERIMENT"]["DumpDir"]
         key, path = program
         dump_dir = os.path.join(base_dump_dir, f"{key}_{step}")
-        # create_directory(dump_dir)
         time_list = []
-        # print(f"Recording {key} with {step} steps")
         for run in range(reruns):
             if run_type != RunType.RUN_REPLAY:
                 delete_directory(dump_dir)

@@ -24,8 +24,8 @@ class RunType(Enum):
 
 
 class BaseRunner:
-    def __init__(self, runner_type: int):
-        self.config = load_config()
+    def __init__(self, runner_type: int, config_path=None):
+        self.config = load_config(config_path)
         self.base_path = self.config["DATA"]["ResultBaseDir"]
         self.storage = StorageFactory.get_storage(runner_type)
         self.logger = init_logger()
@@ -61,9 +61,7 @@ class BaseRunner:
             self.run_program(program, run_type, mode_args, env=None)
 
     def replay_program(self, dump_dir, program, mode_args):
-        env_list = self.storage.load_all_traces(
-            dump_dir
-        )
+        env_list = self.storage.load_all_traces(dump_dir)
         replay_time = []
         for idx, env in enumerate(env_list):
             if idx >= (len(env_list) - 1):

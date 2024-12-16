@@ -6,19 +6,19 @@ import time
 from abc import ABC
 from threading import Event
 
+from naive.node_utils_naive import initialize_nodes
+from naive.user import User
 from protocol.storage.data_storage import DataStorage
-from protocol.user.user_factory import UserFactory
 from protocol.user.user_type import UserType
 from protocol.utils.ecs_utils import init_ecs
 from protocol.utils.fs_utils import delete_directory, save_json_lines
-from protocol.utils.node_utils import initialize_nodes
 from runner.base_runner import BaseRunner
 from runner.experiment_scenarios import ExperimentScenarios
 
 
-class OCCPRunner(BaseRunner, ABC):
+class OCCPNaive(BaseRunner, ABC):
     def __init__(self, program, step_size):
-        super().__init__(2, "occp_config.ini")
+        super().__init__(2, "occp_naive.ini")
         self.program = program
         self.step_size = step_size
         self.address_list = self.load_address_list()
@@ -27,7 +27,7 @@ class OCCPRunner(BaseRunner, ABC):
 
     @staticmethod
     def load_address_list():
-        with open("./data/ecs/contract_list.dat") as handler:
+        with open("./data/ecs/contract_list_naive.dat") as handler:
             contract_data = handler.readlines()
         contract_list = list(map(lambda line: line.strip("\n"), contract_data))
         return contract_list
@@ -46,11 +46,11 @@ class OCCPRunner(BaseRunner, ABC):
             scenarios = [
                 ExperimentScenarios.HappyCase,
                 ExperimentScenarios.MaliciousUser,
-                ExperimentScenarios.ERA,
                 ExperimentScenarios.LazyWorkerPercentage_10,
                 ExperimentScenarios.LazyWorkerPercentage_20,
                 ExperimentScenarios.LazyWorkerPercentage_30,
                 ExperimentScenarios.LazyWorkerPercentage_40,
+                ExperimentScenarios.ERA,
             ]
         return scenarios
 
@@ -167,7 +167,10 @@ class OCCPRunner(BaseRunner, ABC):
         base_address = self.config["NETWORK"]["BCBaseAddress"]
         ecs_list = [
             init_ecs(
-                f"{base_address}:{i}0002", self.address_list[run_id], run_args=run_args
+                f"{base_address}:{i}0002",
+                self.address_list[run_id],
+                run_args=run_args,
+                is_naive=True,
             )
             for i in range(1, 4)
         ]
@@ -176,7 +179,7 @@ class OCCPRunner(BaseRunner, ABC):
         user_type = self.get_user_type(run_args)
         if user_type == UserType.ERA:
             run_args["alt_code"] = "fibonacci_iterative_era"
-        user = UserFactory().create_user(user_type, ecs_list[0], run_args)
+        user = User(user_type, ecs_list[0], run_args)
         task_data = user.run()
         # start up all nodes
         kill_all = Event()
@@ -187,9 +190,11 @@ class OCCPRunner(BaseRunner, ABC):
             "kill_event": kill_all,
         }
         # ToDo: check if ThreadPoolExecutor makes more sense!
-        (sequencer_nodes, certifier_nodes, verifier_nodes, lazy_worker_nodes, _) = (
-            initialize_nodes(node_data, run_args)
-        )
+        (
+            certifier_nodes,
+            verifier_nodes,
+            lazy_worker_nodes,
+        ) = initialize_nodes(node_data, run_args)
 
         if run_args["scenario"] in (
             ExperimentScenarios.LazyWorker,
@@ -208,7 +213,6 @@ class OCCPRunner(BaseRunner, ABC):
         if len(lazy_worker_nodes) > 0:
             [x.join() for x in lazy_worker_nodes]
         [t.join() for t in certifier_nodes]
-        [t.join() for t in sequencer_nodes]
         end_time = time.time() - start_time
         return end_time
 
@@ -228,7 +232,7 @@ class OCCPRunner(BaseRunner, ABC):
 
     def run(self):
         program_list = [self.program]
-        isInformed = self.config["EXPERIMENT"]["IsInformedSteps"]
+        isInformed = self.config.getboolean("EXPERIMENT", "IsInformedSteps")
         DataStorage("ecs").create_bucket()
         if isInformed:
             self.execute_experiments_informed(program_list)

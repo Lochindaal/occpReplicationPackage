@@ -45,7 +45,7 @@ class BaseUser:
         self.storage_s3.save(pickle.dumps(source_code), src_location)
         return task_uuid, src_location, trace_location
 
-    def run(self):
+    def run(self) -> dict:
         # load traces and store them on S3
         task_data = self.load_task_data()
         task_uuid, src_location, trace_location = self.store_task_data(task_data)
@@ -111,14 +111,14 @@ class BaseUser:
 
     def prepare_traces(self, traces):
         sequence_hash, all_hashes = self.create_sequence_hash(traces)
-        # result_trace = traces[len(traces) - 1]
         del traces[len(traces) - 1]
 
         upl_traces = []
         for key, trace in traces.items():
             upl_traces.append(
                 {
-                    "traceId": key + 1,  # ToDo make traceId random but unique and within range of max snapshots!
+                    "traceId": key
+                    + 1,  # ToDo make traceId random but unique and within range of max snapshots!
                     "traceLocation": str(trace["location"]),
                     "startTraceHash": hashlib.sha256(
                         pickle.dumps(trace["trace"].__dict__)
@@ -130,7 +130,6 @@ class BaseUser:
 
     @staticmethod
     def shuffle_traces(trace_list):
-        # trace_locations = [x['location'] for x in trace_list.values()]
         random.shuffle(trace_list)
         return trace_list
 

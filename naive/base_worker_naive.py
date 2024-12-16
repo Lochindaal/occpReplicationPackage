@@ -15,7 +15,7 @@ class ClientType(Enum):
     MALICIOUS = 2
 
 
-class BaseWorker:
+class BaseWorkerNaive:
     def __init__(self, worker_id, ecs, kill_all, run_args, client_type):
         self.ecs = ecs
         self.worker_id = worker_id
@@ -32,14 +32,14 @@ class BaseWorker:
         self.run_args = run_args
 
     def run(self):
-        print(f"Certifier/Worker {self.worker_id} started...")
+        print(f"Naive Certifier/Worker {self.worker_id} started...")
         create_directory(self.work_dir)
         while not self.killAll.isSet():
             self.work()
-            time.sleep(self.sleep_time)
             if self.loop_break or self.killAll.isSet():
                 break
-        print(f"Worker {self.worker_id} ended...")
+            time.sleep(self.sleep_time)
+        print(f"Naive Worker {self.worker_id} ended...")
 
     @abstractmethod
     def work(self):
@@ -52,30 +52,28 @@ class BaseWorker:
             self.logger.error(e)
             return None
 
-    def send_result(self, task_id, trace_id, target_hash):
+    def send_result(self, task_id, is_correct):
         try:
             # vote accordingly
             start_time = time.time()
-            receipt, _ = self.ecs.vote(task_id, trace_id, target_hash, self.worker_id)
+            receipt, _ = self.ecs.vote(task_id, is_correct, self.worker_id)
             self.logger.info(f"--- {(time.time() - start_time)} seconds to send vote")
             retry_counter = 1
             while receipt.status != 1 and retry_counter < 5:
                 retry_counter += 1
                 n = random.randint(0, retry_counter)
                 time.sleep(n)
-                receipt, _ = self.ecs.vote(
-                    task_id, trace_id, target_hash, self.worker_id
-                )
+                receipt, _ = self.ecs.vote(task_id, is_correct, self.worker_id)
             self.logger.info(
                 f"--- {time.time() - start_time} seconds to vote "
-                f"(with {retry_counter - 1} retries) [Task|Trace: {task_id}|{trace_id}] - Target: {target_hash}"
+                f"(with {retry_counter - 1} retries) [Worker: {self.worker_id} - Task: {task_id}] - Target: {is_correct}"
             )
             self.data_writer.write_data(
                 self.worker_id, 2, (time.time() - start_time), self.client_type.name
             )
         except Exception as e:
             self.logger.error(e)
-        return task_id, trace_id
+        return task_id
 
     def create_dump_dir(self):
         if not os.path.exists(self.work_dir):

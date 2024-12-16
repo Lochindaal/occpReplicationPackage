@@ -1,10 +1,9 @@
 #!/bin/bash
 
 # Define the array of X values
-tuples=( "lanczos,3807" "spf,4981" "merge_sort,4993" "matrix_mul,4340" "fibonacci_10,34878" "fibonacci_iterative_pretty_10,49966"  "lanczos_10,38062" "spf_10,49809" "merge_sort_10,49861" "matrix_mul_10,43328" "fibonacci_100,348776" "fibonacci_iterative_pretty_100,499651" "lanczos_100,380611" "spf_100,498081" "merge_sort_100,498543" "matrix_mul_100,433212" "fibonacci_1000,3487751" "fibonacci_iterative_pretty_1000,4996501" "lanczos_1000,3806101" "spf_1000,4980801" "merge_sort_1000,4985358" "matrix_mul_1000,4332057" )
-
+#tuples=( "fibonacci" "fibonacci_iterative_pretty" "lanczos" "spf" "merge_sort" "matrix_mul" "fibonacci_10" "fibonacci_iterative_pretty_10" "lanczos_10" "spf_10" "merge_sort_10" "matrix_mul_10" "fibonacci_100" "fibonacci_iterative_pretty_100" "lanczos_100" "spf_100" "merge_sort_100" "matrix_mul_100" "fibonacci_1000" "fibonacci_iterative_pretty_1000" "lanczos_1000" "spf_1000" "merge_sort_1000" "matrix_mul_1000" )
 # Base directories
-base_dir="~/occpRepl"
+base_dir="~/occpNaive"
 polygon_dir="Docker/polygonNetwork"
 localstack_dir="Docker/localstack"
 hardhat_dir="$polygon_dir/hardhat"
@@ -19,14 +18,13 @@ else
 fi
 
 # Go into Docker/polygon/hardhat and execute build.sh
-if [ -x "$hardhat_dir/build_and_deploy.sh" ]; then
-	rm "$hardhat_dir/contracts.dat"
+if [ -x "$hardhat_dir/build_and_deploy_naive.sh" ]; then
+	rm "$hardhat_dir/contracts_naive.dat"
 	echo "Executing build.sh in $hardhat_dir..."
-	(cd "$hardhat_dir" && ./build_and_deploy.sh)
+	(cd "$hardhat_dir" && ./build_and_deploy_naive.sh)
 else
-	echo "build_and_deploy.sh not found or not executable in $hardhat_dir"
+	echo "build_and_deploy_naive.sh not found or not executable in $hardhat_dir"
 fi
-
 # Call the restart script in Docker/localstack
 if [ -x "$localstack_dir/restart.sh" ]; then
 	echo "Executing restart script in $localstack_dir..."
@@ -35,23 +33,20 @@ else
 	echo "Restart script not found or not executable in $localstack_dir"
 fi
 # Loop through each tuple
-for pair in "${tuples[@]}"; do
-	# Split the tuple into X and Y
-	IFS=',' read -r x y <<< "$pair"
-	echo "Processing X=$x and Y=$y..."
+for program in "${tuples[@]}"; do
+	echo "Processing naive run Program=$program..."
 
-	
 	# Start the Python script with argument X and wait for it to finish
 	python_script="runner.py"  # Replace with the actual Python script name
 	if [ -f "$python_script" ]; then
-		echo "Running Python script: $python_script with arguments X=$x and Y=$y"
-		python "$python_script" --runtype 1 --program "$x" --step_size "$y" >> data/local_output.dat
+		echo "Running Python script: $python_script with arguments program=$program"
+		python "$python_script" --runtype 2 --program "$program" --step_size 100000000000 >> data/naive_output.dat
 	else
 		echo "Python script not found: $python_script"
 		exit 1
 	fi
 	
-	echo "Processing for X=$x completed."
+	echo "Processing for naive Program=$program completed."
 	echo "-----------------------------------"
 done
 

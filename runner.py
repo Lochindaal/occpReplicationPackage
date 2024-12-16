@@ -3,6 +3,7 @@ import sys
 
 from runner.local_runner import LocalRunner
 from runner.occp_runner import OCCPRunner
+from runner.occp_naive import OCCPNaive
 
 
 def main():
@@ -12,7 +13,6 @@ def main():
     parser.add_argument("--step_size", type=int)
 
     args = parser.parse_args()
-    #args.runtype = 1
 
     if args.runtype is not None:
         print(f"Received runtype: {args.runtype}")
@@ -23,6 +23,8 @@ def main():
         runner = LocalRunner()
     elif args.runtype == 1:
         runner = OCCPRunner(args.program, args.step_size)
+    elif args.runtime == 2:
+        runner = OCCPNaive(args.program, args.step_size)
     else:
         raise ValueError("Invalid run type")
 
